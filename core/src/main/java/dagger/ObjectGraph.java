@@ -163,16 +163,18 @@ public abstract class ObjectGraph {
       return object;
     }
 
+    // is each module with all provided annotation, does it include all dependencies?
     private static ObjectGraph makeGraph(DaggerObjectGraph base, Loader plugin, Object... modules) {
       Map<String, Class<?>> injectableTypes = new LinkedHashMap<String, Class<?>>();
       Map<Class<?>, StaticInjection> staticInjections
           = new LinkedHashMap<Class<?>, StaticInjection>();
       StandardBindings baseBindings =
-          (base == null) ? new StandardBindings() : new StandardBindings(base.setBindings);
+          (base == null) ? new StandardBindings() : new StandardBindings(base.setBindings);  //why only setbinding? it is the basebinding part
       BindingsGroup overrideBindings = new OverridesBindings();
 
-      Map<ModuleAdapter<?>, Object> loadedModules = Modules.loadModules(plugin, modules);
+      Map<ModuleAdapter<?>, Object> loadedModules = Modules.loadModules(plugin, modules); //load all the modules into the loadedModules
       for (Entry<ModuleAdapter<?>, Object> loadedModule : loadedModules.entrySet()) {
+        // moduleadapter Extracts bindings from an {@code @Module}-annotated class.
         ModuleAdapter<Object> moduleAdapter = (ModuleAdapter<Object>) loadedModule.getKey();
         for (int i = 0; i < moduleAdapter.injectableTypes.length; i++) {
           injectableTypes.put(moduleAdapter.injectableTypes[i], moduleAdapter.moduleClass);
