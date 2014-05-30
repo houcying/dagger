@@ -17,6 +17,8 @@ package dagger.internal.codegen;
 
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
+import static dagger.Provides.Type.MAP;
+import static dagger.Provides.Type.MAP_VALUES;
 import static org.truth0.Truth.ASSERT;
 
 import com.google.common.collect.Iterables;
@@ -126,7 +128,9 @@ public class KeyTest {
           .isEqualTo(Key.create(setOfStringsType));
     }
   }
-
+  
+  //changed!!!
+/*
   @Module(library = true)
   static final class SetProvidesMethodsModule {
     @Provides(type = SET) String provideString() {
@@ -137,4 +141,17 @@ public class KeyTest {
       return null;
     }
   }
+  
+*/
+  @Module(library = true)
+  static final class SetProvidesMethodsModule {
+    @Provides(type = MAP) String provideString() {
+      return null;
+    }
+
+    @Provides(type = MAP_VALUES) Set<String> provideStrings() {
+      return null;
+    }
+  }
+  
 }
