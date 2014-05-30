@@ -109,6 +109,13 @@ public class TestingModuleAdapter<M> extends ModuleAdapter<M> {
         new ReflectiveProvidesBinding<M>(
             method, providerKey, moduleClass.getName(), module, library));
   }
+  
+  private void handleMapBindings(BindingsGroup bindings, M module, Method method,
+      String mapKey, String providerKey, boolean library) {
+    SetBinding.<M>add(bindings, mapKey,
+        new ReflectiveProvidesBinding<M>(
+            method, providerKey, moduleClass.getName(), module, library));
+  }
 
   @Override public M newModule() {
     try {

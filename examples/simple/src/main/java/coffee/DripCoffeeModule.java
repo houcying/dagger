@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 
 @Module(
-    injects = CoffeeApp.class,
+ //   injects = CoffeeApp.class,
     includes = PumpModule.class
 )
 class DripCoffeeModule {

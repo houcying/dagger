@@ -168,11 +168,12 @@ public abstract class ObjectGraph {
       Map<String, Class<?>> injectableTypes = new LinkedHashMap<String, Class<?>>();
       Map<Class<?>, StaticInjection> staticInjections
           = new LinkedHashMap<Class<?>, StaticInjection>();
+      //why only setbinding? it is the basebinding part
       StandardBindings baseBindings =
-          (base == null) ? new StandardBindings() : new StandardBindings(base.setBindings);  //why only setbinding? it is the basebinding part
+          (base == null) ? new StandardBindings() : new StandardBindings(base.setBindings);
       BindingsGroup overrideBindings = new OverridesBindings();
-
-      Map<ModuleAdapter<?>, Object> loadedModules = Modules.loadModules(plugin, modules); //load all the modules into the loadedModules
+      //load all the modules into the loadedModules
+      Map<ModuleAdapter<?>, Object> loadedModules = Modules.loadModules(plugin, modules);
       for (Entry<ModuleAdapter<?>, Object> loadedModule : loadedModules.entrySet()) {
         // moduleadapter Extracts bindings from an {@code @Module}-annotated class.
         ModuleAdapter<Object> moduleAdapter = (ModuleAdapter<Object>) loadedModule.getKey();
