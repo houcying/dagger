@@ -21,10 +21,12 @@ import dagger.internal.Binding;
 import dagger.internal.Binding.InvalidBindingException;
 import dagger.internal.BindingsGroup;
 import dagger.internal.Linker;
+import dagger.internal.MapBinding;
 import dagger.internal.ProblemDetector;
 import dagger.internal.ProvidesBinding;
 import dagger.internal.SetBinding;
 import dagger.internal.codegen.Util.CodeGenerationIncompleteException;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -39,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -58,6 +61,8 @@ import javax.tools.StandardLocation;
 
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
+import static dagger.Provides.Type.MAP;
+import static dagger.Provides.Type.MAP_VALUES;
 import static dagger.internal.codegen.Util.className;
 import static dagger.internal.codegen.Util.getAnnotation;
 import static dagger.internal.codegen.Util.getPackage;
@@ -181,10 +186,22 @@ public final class GraphAnalysisProcessor extends AbstractProcessor {
         @Override public Binding<?> contributeSetBinding(String key, SetBinding<?> value) {
           return super.put(key, value);
         }
+
+        @Override
+        public Binding<?> contributeMapBinding(String key, MapBinding<?> value) {
+          // TODO(houcy): Auto-generated method stub
+          return super.put(key, value);
+        }
       };
       BindingsGroup overrideBindings = new BindingsGroup() {
         @Override public Binding<?> contributeSetBinding(String key, SetBinding<?> value) {
           throw new IllegalStateException("Module overrides cannot contribute set bindings.");
+        }
+
+        @Override
+        public Binding<?> contributeMapBinding(String key, MapBinding<?> value) {
+          // TODO(houcy): Auto-generated method stub
+          throw new IllegalStateException("Module overrides cannot contribute map bindings.");
         }
       };
       for (TypeElement module : allModules.values()) {
@@ -237,6 +254,20 @@ public final class GraphAnalysisProcessor extends AbstractProcessor {
               error(message, providerMethod);
             }
           }
+          
+          if (previous != null) {
+            if ((provides.type() == MAP || provides.type() == MAP_VALUES)
+                && previous instanceof MapBinding) {
+              // No duplicate bindings error if both bindings are set bindings.
+            } else {
+              String message = "Duplicate bindings for " + key;
+              if (overrides) {
+                message += " in override module(s) - cannot override an override";
+              }
+              message += ":\n    " + previous.requiredBy + "\n    " + binding.requiredBy;
+              error(message, providerMethod);
+            }
+          }
 
           switch (provides.type()) {
             case UNIQUE:
@@ -259,6 +290,14 @@ public final class GraphAnalysisProcessor extends AbstractProcessor {
               SetBinding.add(addTo, key, binding);
               break;
 
+            case MAP:
+              String mapKey = GeneratorKeys.getMapKey(providerMethod);
+              SetBinding.add(addTo, mapKey, binding);
+              break;
+
+            case MAP_VALUES:
+              MapBinding.add(addTo, key, binding);
+              break;
             default:
               throw new AssertionError("Unknown @Provides type " + provides.type());
           }

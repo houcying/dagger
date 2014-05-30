@@ -53,7 +53,9 @@ public @interface Provides {
      * contributed to the set. An example use is to provide a default empty set binding, which is
      * otherwise not possible using {@link #SET}.
      */
-    SET_VALUES;
+    SET_VALUES,
+    MAP,
+    MAP_VALUES;
   }
 
   Type type() default Type.UNIQUE;

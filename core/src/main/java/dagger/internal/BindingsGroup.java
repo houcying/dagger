@@ -29,6 +29,8 @@ public abstract class BindingsGroup {
   private final Map<String, Binding<?>> bindings = new LinkedHashMap<String, Binding<?>>();
 
   public abstract Binding<?> contributeSetBinding(String key, SetBinding<?> value);
+  
+  public abstract Binding<?> contributeMapBinding(String key, MapBinding<?> value);
 
   public Binding<?> contributeProvidesBinding(String key, ProvidesBinding<?> value) {
     return put(key, value);

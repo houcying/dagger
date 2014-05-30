@@ -18,6 +18,7 @@ package dagger.internal.codegen;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.inject.Qualifier;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -114,5 +115,22 @@ final class GeneratorKeys {
       qualifier = annotation;
     }
     return qualifier;
+  }
+
+  /**
+   * @param providerMethod
+   * @return
+   */
+  public static String getMapKey(ExecutableElement method) {
+    // TODO(houcy): Auto-generated method stub
+    StringBuilder result = new StringBuilder();
+    AnnotationMirror qualifier = getQualifier(method.getAnnotationMirrors());
+    if (qualifier != null) {
+      qualifierToString(qualifier, result);
+    }
+    result.append(SET_PREFIX);
+    typeToString(method.getReturnType(), result, '$');
+    result.append(">");
+    return result.toString();
   }
 }

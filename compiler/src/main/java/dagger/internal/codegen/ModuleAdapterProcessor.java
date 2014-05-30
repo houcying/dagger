@@ -25,6 +25,7 @@ import dagger.internal.Linker;
 import dagger.internal.ModuleAdapter;
 import dagger.internal.ProvidesBinding;
 import dagger.internal.SetBinding;
+import dagger.internal.MapBinding;
 import dagger.internal.codegen.Util.CodeGenerationIncompleteException;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -61,6 +62,8 @@ import javax.tools.JavaFileObject;
 
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
+import static dagger.Provides.Type.MAP;
+import static dagger.Provides.Type.MAP_VALUES;
 import static dagger.internal.codegen.AdapterJavadocs.bindingTypeDocs;
 import static dagger.internal.codegen.Util.adapterName;
 import static dagger.internal.codegen.Util.elementToString;
@@ -361,6 +364,20 @@ public final class ModuleAdapterProcessor extends AbstractProcessor {
                 bindingClassName(providerMethod, methodToClassName, methodNameToNextId));
             break;
           }
+          case MAP: {
+            String key = GeneratorKeys.getMapKey(providerMethod);
+            writer.emitStatement("MapBinding.add(bindings, %s, new %s(module))",
+                JavaWriter.stringLiteral(key),
+                bindingClassName(providerMethod, methodToClassName, methodNameToNextId));
+            break;
+          }
+          case MAP_VALUES: {
+            String key = GeneratorKeys.get(providerMethod);
+            writer.emitStatement("MapBinding.add(bindings, %s, new %s(module))",
+                JavaWriter.stringLiteral(key),
+                bindingClassName(providerMethod, methodToClassName, methodNameToNextId));
+            break;
+          }
           default:
             throw new AssertionError("Unknown @Provides type " + provides.type());
         }
@@ -392,6 +409,7 @@ public final class ModuleAdapterProcessor extends AbstractProcessor {
     }
     if (multibindings) {
       imports.add(SetBinding.class.getCanonicalName());
+      imports.add(MapBinding.class.getCanonicalName());
     }
     return imports;
   }
@@ -405,10 +423,14 @@ public final class ModuleAdapterProcessor extends AbstractProcessor {
     return false;
   }
 
+  //??? not sure whether should add map
   private boolean checkForMultibindings(List<ExecutableElement> providerMethods) {
     for (ExecutableElement element : providerMethods) {
       Provides.Type providesType = element.getAnnotation(Provides.class).type();
       if (providesType == SET || providesType == SET_VALUES) {
+        return true;
+      }
+      if (providesType == MAP || providesType == MAP_VALUES) {
         return true;
       }
     }

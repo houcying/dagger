@@ -22,6 +22,7 @@ import dagger.internal.FailoverLoader;
 import dagger.internal.Keys;
 import dagger.internal.Linker;
 import dagger.internal.Loader;
+import dagger.internal.MapBinding;
 import dagger.internal.ModuleAdapter;
 import dagger.internal.Modules;
 import dagger.internal.Modules.ModuleWithAdapter;
@@ -29,6 +30,7 @@ import dagger.internal.ProblemDetector;
 import dagger.internal.SetBinding;
 import dagger.internal.StaticInjection;
 import dagger.internal.ThrowingErrorHandler;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -143,13 +145,14 @@ public abstract class ObjectGraph {
     private final Map<Class<?>, StaticInjection> staticInjections;
     private final Map<String, Class<?>> injectableTypes;
     private final List<SetBinding<?>> setBindings;
+    private final List<MapBinding<?>> mapBindings;
 
     DaggerObjectGraph(DaggerObjectGraph base,
         Linker linker,
         Loader plugin,
         Map<Class<?>, StaticInjection> staticInjections,
         Map<String, Class<?>> injectableTypes,
-        List<SetBinding<?>> setBindings) {
+        List<SetBinding<?>> setBindings, List<MapBinding<?>> mapBindings) {
 
       this.base = base;
       this.linker = checkNotNull(linker, "linker");
@@ -157,6 +160,7 @@ public abstract class ObjectGraph {
       this.staticInjections = checkNotNull(staticInjections, "staticInjections");
       this.injectableTypes = checkNotNull(injectableTypes, "injectableTypes");
       this.setBindings = checkNotNull(setBindings, "setBindings");
+      this.mapBindings = checkNotNull(mapBindings, "mapBindings");
     }
 
     private static <T> T checkNotNull(T object, String label) {
@@ -169,7 +173,7 @@ public abstract class ObjectGraph {
       Map<Class<?>, StaticInjection> staticInjections
           = new LinkedHashMap<Class<?>, StaticInjection>();
       StandardBindings baseBindings =
-          (base == null) ? new StandardBindings() : new StandardBindings(base.setBindings);
+          (base == null) ? new StandardBindings() : new StandardBindings(base.setBindings, base.mapBindings);
       BindingsGroup overrideBindings = new OverridesBindings();
 
       ArrayList<ModuleWithAdapter> loadedModules = Modules.loadModules(plugin, modules);
@@ -201,7 +205,7 @@ public abstract class ObjectGraph {
       linker.installBindings(overrideBindings);
 
       return new DaggerObjectGraph(
-          base, linker, plugin, staticInjections, injectableTypes, baseBindings.setBindings);
+          base, linker, plugin, staticInjections, injectableTypes, baseBindings.setBindings, baseBindings.mapBindings);
     }
 
     @Override public ObjectGraph plus(Object... modules) {
@@ -326,9 +330,11 @@ public abstract class ObjectGraph {
    */
   private static final class StandardBindings extends BindingsGroup {
     private final List<SetBinding<?>> setBindings;
+    private final List<MapBinding<?>> mapBindings;
 
     public StandardBindings() {
       setBindings = new ArrayList<SetBinding<?>>();
+      mapBindings = new ArrayList<MapBinding<?>>();
     }
 
     public StandardBindings(List<SetBinding<?>> baseSetBindings) {
@@ -339,10 +345,39 @@ public abstract class ObjectGraph {
         setBindings.add(child);
         put(child.provideKey, child);
       }
+      mapBindings = new ArrayList<MapBinding<?>>();
+    }
+    
+    public StandardBindings(List<SetBinding<?>> baseSetBindings, List<MapBinding<?>> baseMapBindings) {
+      setBindings = new ArrayList<SetBinding<?>>(baseSetBindings.size());
+      for (SetBinding<?> sb : baseSetBindings) {
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        SetBinding<?> child = new SetBinding(sb);
+        setBindings.add(child);
+        put(child.provideKey, child);
+      }
+      
+      mapBindings = new ArrayList<MapBinding<?>>(baseMapBindings.size());
+      for (MapBinding<?> mb : baseMapBindings) {
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        MapBinding<?> child = new MapBinding(mb);
+        mapBindings.add(child);
+        put(child.provideKey, child);
+      }
     }
 
     @Override public Binding<?> contributeSetBinding(String key, SetBinding<?> value) {
       setBindings.add(value);
+      return super.put(key, value);
+    }
+
+    /* (non-Javadoc)
+     * @see dagger.internal.BindingsGroup#contributeMapBinding(java.lang.String, dagger.internal.MapBinding)
+     */
+    @Override
+    public Binding<?> contributeMapBinding(String key, MapBinding<?> value) {
+      // TODO(houcy): Auto-generated method stub
+      mapBindings.add(value);
       return super.put(key, value);
     }
   }
@@ -357,6 +392,15 @@ public abstract class ObjectGraph {
 
     @Override public Binding<?> contributeSetBinding(String key, SetBinding<?> value) {
       throw new IllegalArgumentException("Module overrides cannot contribute set bindings.");
+    }
+
+    /* (non-Javadoc)
+     * @see dagger.internal.BindingsGroup#contributeMapBinding(java.lang.String, dagger.internal.MapBinding)
+     */
+    @Override
+    public Binding<?> contributeMapBinding(String key, MapBinding<?> value) {
+      // TODO(houcy): Auto-generated method stub
+      throw new IllegalArgumentException("Module overrides cannot contribute map bindings.");
     }
   }
 }
