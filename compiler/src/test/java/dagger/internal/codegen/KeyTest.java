@@ -129,8 +129,7 @@ public class KeyTest {
     }
   }
   
-  //changed!!!
-/*
+
   @Module(library = true)
   static final class SetProvidesMethodsModule {
     @Provides(type = SET) String provideString() {
@@ -142,9 +141,9 @@ public class KeyTest {
     }
   }
   
-*/
+/*
   @Module(library = true)
-  static final class SetProvidesMethodsModule {
+  static final class MapProvidesMethodsModule {
     @Provides(type = MAP) String provideString() {
       return null;
     }
@@ -153,5 +152,5 @@ public class KeyTest {
       return null;
     }
   }
-  
+  */
 }
