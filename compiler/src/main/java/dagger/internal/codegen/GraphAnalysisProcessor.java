@@ -254,7 +254,7 @@ public final class GraphAnalysisProcessor extends AbstractProcessor {
               error(message, providerMethod);
             }
           }
-          
+
           if (previous != null) {
             if ((provides.type() == MAP || provides.type() == MAP_VALUES)
                 && previous instanceof MapBinding) {
