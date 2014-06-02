@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 
 @Module(
- //   injects = CoffeeApp.class,
+    injects = CoffeeApp.class,
     includes = PumpModule.class
 )
 class DripCoffeeModule {
@@ -15,6 +15,9 @@ class DripCoffeeModule {
   }
   @Provides(type = Provides.Type.SET) Flavor provideFlavor() {
     return new Flavor("vanilla");
+  }
+  @Provides(type = Provides.Type.SET) Flavor provideFlavor2() {
+    return new Flavor("chocolate");
   }
 }
 
