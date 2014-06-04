@@ -30,7 +30,7 @@ public abstract class BindingsGroup {
 
   public abstract Binding<?> contributeSetBinding(String key, SetBinding<?> value);
   
-  public abstract Binding<?> contributeMapBinding(String key, MapBinding<?> value);
+  public abstract Binding<?> contributeMapBinding(String key, MapBinding<?, ?> value);
 
   public Binding<?> contributeProvidesBinding(String key, ProvidesBinding<?> value) {
     return put(key, value);
