@@ -5,6 +5,6 @@ import java.util.Set;
 
 @Component(modules = { DripCoffeeModule.class, PumpModule.class })
 interface CoffeeMain {
-  Set<Flavor> flavors();
   CoffeeMaker getMaker();
+  Set<Flavor> flavors();
 }

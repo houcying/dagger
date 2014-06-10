@@ -8,14 +8,15 @@ import static dagger.Provides.Type.SET;
 
 @Module(
     injects = CoffeeApp.class,
-    includes = PumpModule.class
+    includes = PumpModule.class,
+    library = true
 )
 class DripCoffeeModule {
   @Provides @Singleton Heater provideHeater() {
     return new ElectricHeater();
   }
 
-  @Provides(type=SET) Flavor vanilla() {
+  @Provides(type = SET) Flavor vanilla() {
     return new Flavor("vanilla");
   }
 }
