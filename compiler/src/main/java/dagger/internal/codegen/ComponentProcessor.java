@@ -116,10 +116,12 @@ public final class ComponentProcessor extends AbstractProcessor {
             componentValidator,
             componentDescriptorFactory,
             componentGenerator));
+    System.out.println("finish initing");
   }
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    System.out.println("begin process!");
     for (ProcessingStep processingStep : processingSteps) {
       processingStep.process(annotations, roundEnv);
     }

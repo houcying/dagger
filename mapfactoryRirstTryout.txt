@@ -1,0 +1,347 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for com.google.dagger:dagger:jar:1.2.1-SNAPSHOT
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-javadoc-plugin is missing. @ line 77, column 15
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-jar-plugin is missing. @ line 83, column 15
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Dagger (Parent)
+[INFO] Dagger
+[INFO] Dagger Compiler
+[INFO] Examples
+[INFO] Examples: Simple
+[INFO] Examples: Android - Simple
+[INFO] Examples: Android - Activity Graphs
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dagger (Parent) 1.2.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ dagger-parent ---
+[INFO] 
+[INFO] --- maven-checkstyle-plugin:2.10:checkstyle (default) @ dagger-parent ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.3:install (default-install) @ dagger-parent ---
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/pom.xml to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/dagger-parent/1.2.1-SNAPSHOT/dagger-parent-1.2.1-SNAPSHOT.pom
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dagger 1.2.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ dagger ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ dagger ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ dagger ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-checkstyle-plugin:2.10:checkstyle (default) @ dagger ---
+[INFO] Starting audit...
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/Component.java:66:33: '}' is not preceded with whitespace.
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/Provides.java:57: Line has trailing spaces.
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/Provides.java:59: Line has trailing spaces.
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/internal/Modules.java:44:33: '-' is not preceded with whitespace.
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/internal/Modules.java:44:34: '-' is not followed by whitespace.
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/internal/MapFactory.java:45: Line is longer than 100 characters (found 103).
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/internal/MapFactory.java:84: Line has trailing spaces.
+/usr/local/google/home/houcy/Documents/dagger/houcying/core/src/main/java/dagger/internal/MapFactory.java:106: Line has trailing spaces.
+Audit done.
+
+[INFO] There are 8 checkstyle errors.
+[WARNING] Unable to locate Source XRef to link to - DISABLED
+[INFO] 
+[INFO] --- animal-sniffer-maven-plugin:1.8:check (sniff-api) @ dagger ---
+[INFO] Checking unresolved references to org.codehaus.mojo.signature:java15:1.0
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ dagger ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /usr/local/google/home/houcy/Documents/dagger/houcying/core/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ dagger ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ dagger ---
+[INFO] Surefire report directory: /usr/local/google/home/houcy/Documents/dagger/houcying/core/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running dagger.InjectionTest
+Tests run: 41, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.132 sec
+Running dagger.InjectStaticsTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 sec
+Running dagger.MembersInjectorTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 sec
+Running dagger.ExtensionWithStateTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec
+Running dagger.LazyInjectionTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 sec
+Running dagger.ThreadSafetyTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 sec
+Running dagger.ExtensionTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 sec
+Running dagger.InjectionOfLazyTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 sec
+Running dagger.ExtensionWithSetBindingsTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 sec
+Running dagger.internal.DoubleCheckLazyTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 sec
+Running dagger.internal.SetFactoryTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.03 sec
+Running dagger.internal.SingletonBindingTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec
+Running dagger.internal.FailoverLoaderTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 sec
+Running dagger.internal.KeysTest
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 sec
+Running dagger.internal.ScopedProviderTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 sec
+Running dagger.SetBindingTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.02 sec
+Running dagger.ProblemDetectorTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 sec
+Running dagger.UnusedProviderTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 sec
+Running dagger.ModuleTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 sec
+
+Results :
+
+Tests run: 142, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.2:jar (default-jar) @ dagger ---
+[INFO] Building jar: /usr/local/google/home/houcy/Documents/dagger/houcying/core/target/dagger-1.2.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-jar-plugin:2.2:test-jar (default) @ dagger ---
+[INFO] Building jar: /usr/local/google/home/houcy/Documents/dagger/houcying/core/target/dagger-1.2.1-SNAPSHOT-tests.jar
+[INFO] 
+[INFO] --- maven-install-plugin:2.3:install (default-install) @ dagger ---
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/core/target/dagger-1.2.1-SNAPSHOT.jar to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/dagger/1.2.1-SNAPSHOT/dagger-1.2.1-SNAPSHOT.jar
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/core/pom.xml to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/dagger/1.2.1-SNAPSHOT/dagger-1.2.1-SNAPSHOT.pom
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/core/target/dagger-1.2.1-SNAPSHOT-tests.jar to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/dagger/1.2.1-SNAPSHOT/dagger-1.2.1-SNAPSHOT-tests.jar
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dagger Compiler 1.2.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ dagger-compiler ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ dagger-compiler ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 1 resource
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ dagger-compiler ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-checkstyle-plugin:2.10:checkstyle (default) @ dagger-compiler ---
+[INFO] Starting audit...
+/usr/local/google/home/houcy/Documents/dagger/houcying/compiler/src/main/java/dagger/internal/codegen/ProvisionBinding.java:82:46: Name 'SET_BINDING_TYPES' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+/usr/local/google/home/houcy/Documents/dagger/houcying/compiler/src/main/java/dagger/internal/codegen/ProvisionBinding.java:83:46: Name 'MAP_BINDING_TYPES' must match pattern '^[a-z][a-zA-Z0-9]*$'.
+Audit done.
+
+[INFO] There are 2 checkstyle errors.
+[WARNING] Unable to locate Source XRef to link to - DISABLED
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:testResources (default-testResources) @ dagger-compiler ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /usr/local/google/home/houcy/Documents/dagger/houcying/compiler/src/test/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ dagger-compiler ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:testCompile (default-test-compile) @ dagger-compiler ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO] 
+[INFO] --- maven-surefire-plugin:2.10:test (default-test) @ dagger-compiler ---
+[INFO] Surefire report directory: /usr/local/google/home/houcy/Documents/dagger/houcying/compiler/target/surefire-reports
+
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running dagger.tests.integration.operation.PrimitiveInjectionTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 sec
+Running dagger.tests.integration.operation.SimpleInjectionTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+Running dagger.tests.integration.validation.SimpleMissingDependencyTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.572 sec
+Running dagger.tests.integration.validation.CyclicModuleIncludesTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.274 sec
+Running dagger.tests.integration.validation.ScopeAnnotationUseTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.537 sec
+Running dagger.tests.integration.validation.LibraryModuleTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.202 sec
+Running dagger.tests.integration.validation.GeneratedTypesNotReadyTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.499 sec
+Running dagger.tests.integration.validation.CyclicDependencyTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.114 sec
+Running dagger.tests.integration.codegen.InjectAdapterGenerationTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.07 sec
+Running dagger.tests.integration.codegen.ModuleAdapterGenerationTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.233 sec
+Running dagger.internal.codegen.KeyTest
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.113 sec
+Running dagger.internal.codegen.MoreTypesTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.116 sec
+Running dagger.internal.codegen.GraphVisualizerTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 sec
+Running dagger.internal.codegen.ModuleProcessorTest
+Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.493 sec
+Running dagger.internal.codegen.ComponentProcessorTest
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.253 sec
+Running dagger.internal.codegen.ElementUtilTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.064 sec
+Running dagger.internal.codegen.InjectProcessorTest
+Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.683 sec
+Running dagger.internal.codegen.DotWriterTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 sec
+Running dagger.internal.codegen.SourceFileGeneratorTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.126 sec
+Running dagger.internal.codegen.ClassNameTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 sec
+
+Results :
+
+Tests run: 98, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] 
+[INFO] --- maven-jar-plugin:2.2:jar (default-jar) @ dagger-compiler ---
+[INFO] Building jar: /usr/local/google/home/houcy/Documents/dagger/houcying/compiler/target/dagger-compiler-1.2.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- maven-assembly-plugin:2.2-beta-5:single (default) @ dagger-compiler ---
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/google/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] com/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/google/ already added, skipping
+[INFO] com/google/auto/ already added, skipping
+[INFO] META-INF/services/javax.annotation.processing.Processor already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/services/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/google/ already added, skipping
+[INFO] com/google/auto/ already added, skipping
+[INFO] META-INF/services/javax.annotation.processing.Processor already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] javax/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] Building jar: /usr/local/google/home/houcy/Documents/dagger/houcying/compiler/target/dagger-compiler-1.2.1-SNAPSHOT-jar-with-dependencies.jar
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/google/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] com/ already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/google/ already added, skipping
+[INFO] com/google/auto/ already added, skipping
+[INFO] META-INF/services/javax.annotation.processing.Processor already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] META-INF/services/ already added, skipping
+[INFO] com/ already added, skipping
+[INFO] com/google/ already added, skipping
+[INFO] com/google/auto/ already added, skipping
+[INFO] META-INF/services/javax.annotation.processing.Processor already added, skipping
+[INFO] META-INF/maven/ already added, skipping
+[INFO] META-INF/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] javax/ already added, skipping
+[INFO] META-INF/MANIFEST.MF already added, skipping
+[INFO] 
+[INFO] --- maven-invoker-plugin:1.7:install (integration-test) @ dagger-compiler ---
+[INFO] Skipping artifact installation per configuration.
+[INFO] 
+[INFO] --- maven-invoker-plugin:1.7:run (integration-test) @ dagger-compiler ---
+[INFO] Skipping invocation per configuration. If this is incorrect, ensure the skipInvocation parameter is not set to true.
+[INFO] 
+[INFO] --- maven-install-plugin:2.3:install (default-install) @ dagger-compiler ---
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/compiler/target/dagger-compiler-1.2.1-SNAPSHOT.jar to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/dagger-compiler/1.2.1-SNAPSHOT/dagger-compiler-1.2.1-SNAPSHOT.jar
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/compiler/pom.xml to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/dagger-compiler/1.2.1-SNAPSHOT/dagger-compiler-1.2.1-SNAPSHOT.pom
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/compiler/target/dagger-compiler-1.2.1-SNAPSHOT-jar-with-dependencies.jar to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/dagger-compiler/1.2.1-SNAPSHOT/dagger-compiler-1.2.1-SNAPSHOT-jar-with-dependencies.jar
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Examples 1.2.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ dagger-example-parent ---
+[INFO] 
+[INFO] --- maven-checkstyle-plugin:2.10:checkstyle (default) @ dagger-example-parent ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.3:install (default-install) @ dagger-example-parent ---
+[INFO] Installing /usr/local/google/home/houcy/Documents/dagger/houcying/examples/pom.xml to /usr/local/google/home/houcy/.m2/repository/com/google/dagger/example/dagger-example-parent/1.2.1-SNAPSHOT/dagger-example-parent-1.2.1-SNAPSHOT.pom
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Examples: Simple 1.2.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ simple ---
+[INFO] 
+[INFO] --- maven-resources-plugin:2.3:resources (default-resources) @ simple ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] skip non existing resourceDirectory /usr/local/google/home/houcy/Documents/dagger/houcying/examples/simple/src/main/resources
+[INFO] 
+[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ simple ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 13 source files to /usr/local/google/home/houcy/Documents/dagger/houcying/examples/simple/target/classes
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] Dagger (Parent) ................................... SUCCESS [0.563s]
+[INFO] Dagger ............................................ SUCCESS [2.578s]
+[INFO] Dagger Compiler ................................... SUCCESS [6.532s]
+[INFO] Examples .......................................... SUCCESS [0.005s]
+[INFO] Examples: Simple .................................. FAILURE [0.392s]
+[INFO] Examples: Android - Simple ........................ SKIPPED
+[INFO] Examples: Android - Activity Graphs ............... SKIPPED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 10.940s
+[INFO] Finished at: Wed Jun 11 09:57:21 PDT 2014
+[INFO] Final Memory: 35M/579M
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.1:compile (default-compile) on project simple: Fatal error compiling: java.lang.IllegalArgumentException: Incorrect number of type arguments -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <goals> -rf :simple

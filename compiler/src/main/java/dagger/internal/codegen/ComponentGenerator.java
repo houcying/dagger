@@ -19,6 +19,8 @@ import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.squareup.javawriter.JavaWriter.stringLiteral;
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
+import static dagger.Provides.Type.MAP;
+import static dagger.Provides.Type.MAP_VALUES;
 import static dagger.internal.codegen.ProvisionBinding.Kind.PROVISION;
 import static dagger.internal.codegen.SourceFiles.collectImportsFromDependencies;
 import static dagger.internal.codegen.SourceFiles.factoryNameForProvisionBinding;
@@ -47,9 +49,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import com.squareup.javawriter.JavaWriter;
 
 import dagger.Component;
+import dagger.internal.MapFactory;
 import dagger.internal.SetFactory;
 
 import java.io.IOException;
@@ -82,6 +86,7 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
 
   @Override
   ClassName nameGeneratedType(ComponentDescriptor input) {
+    System.out.println("here");
     ClassName componentDefinitionClassName =
         ClassName.fromTypeElement(input.componentDefinitionType());
     return componentDefinitionClassName.peerNamed(
@@ -142,8 +147,12 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
             .add(ClassName.fromClass(Generated.class))
             .add(ClassName.fromClass(Provider.class));
     for (ProvisionBinding binding : bindings) {
+      System.out.println(binding.provisionType());
       if (binding.provisionType().equals(SET) || binding.provisionType().equals(SET_VALUES)) {
         importsBuilder.add(ClassName.fromClass(SetFactory.class));
+      }
+      if (binding.provisionType().equals(MAP) || binding.provisionType().equals(MAP_VALUES)) {
+        importsBuilder.add(ClassName.fromClass(MapFactory.class));
       }
       for (TypeElement referencedType : MoreTypes.referencedTypes(binding.providedKey().type())) {
         ClassName className = ClassName.fromTypeElement(referencedType);
@@ -211,6 +220,15 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
         writer.emitStatement("this.%s = SetFactory.create(%n%s)",
             providerFieldEntry.getKey(),
             Joiner.on(",\n").join(setFactoryParameters.build()));
+      } else if (ProvisionBinding.isMapBindingCollection(bindings)) {
+        ImmutableList.Builder<String> mapFactoryParameters = ImmutableList.builder();
+        for (ProvisionBinding binding : bindings) {
+          mapFactoryParameters.add(
+              initializeFactoryForBinding(writer, binding, moduleNames, providerNames));
+        }
+        writer.emitStatement("this.%s = MapFactory.create(%n%s)",
+            providerFieldEntry.getKey(),
+            Joiner.on(",\n").join(mapFactoryParameters.build()));
       } else {
         ProvisionBinding binding = Iterables.getOnlyElement(bindings);
         writer.emitStatement("this.%s = %s",

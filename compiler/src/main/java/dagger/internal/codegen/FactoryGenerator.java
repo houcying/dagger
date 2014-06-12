@@ -44,10 +44,8 @@ import dagger.Factory;
 import dagger.MembersInjector;
 import dagger.Provides;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Generated;
@@ -143,6 +141,9 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
     if (binding.provisionType().equals(Provides.Type.SET)) {
       importsBuilder.add(ClassName.fromClass(Collections.class));
     }
+    if (binding.provisionType().equals(Provides.Type.MAP)) {
+      importsBuilder.add(ClassName.fromClass(Map.class));
+    }
     if (binding.requiresMemberInjection()) {
       importsBuilder.add(ClassName.fromClass(MembersInjector.class));
     }
@@ -217,6 +218,10 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
           writer.emitStatement("return Collections.singleton(module.%s(%s))",
               binding.bindingElement().getSimpleName(), parameterString);
           break;
+        case MAP:
+          writer.emitStatement("return Collections.singletonMap(module.%s(%s))",
+              binding.bindingElement().getSimpleName(), parameterString);
+        break;
         default:
           throw new AssertionError();
       }

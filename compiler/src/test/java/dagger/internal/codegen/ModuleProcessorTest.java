@@ -372,7 +372,7 @@ public class ModuleProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(factoryFile);
   }
-
+/*
   @Test public void proviesSetValues() {
     JavaFileObject moduleFile = JavaFileObjects.forSourceLines("test.TestModule",
         "package test;",
@@ -414,4 +414,5 @@ public class ModuleProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(factoryFile);
   }
+  */
 }

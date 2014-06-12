@@ -107,6 +107,8 @@ final class ProvidesMethodValidator implements Validator<ExecutableElement> {
       case SET:
         validateKeyType(builder, returnType);
         break;
+      case MAP:
+        validateKeyType(builder, returnType);
       case SET_VALUES:
         if (!returnTypeKind.equals(DECLARED)) {
           builder.addItem(PROVIDES_METHOD_SET_VALUES_RETURN_SET, providesMethodElement);

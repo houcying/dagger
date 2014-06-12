@@ -41,7 +41,7 @@ public final class Modules {
     // Iterate over seedModulesOrClasses in reverse, so that if multiple instances/classes of the
     // same module are provided, the later one is used (this matches previous behavior which some
     // code came to depend on.)
-    for (int i = seedModuleCount-1; i >= 0; i--) {
+    for (int i = seedModuleCount - 1; i >= 0; i--) {
       Object moduleOrClass = seedModulesOrClasses[i];
       if (moduleOrClass instanceof Class<?>) {
         if (visitedClasses.add((Class<?>) moduleOrClass)) {

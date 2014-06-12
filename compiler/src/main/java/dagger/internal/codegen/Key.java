@@ -29,6 +29,7 @@ import com.google.common.base.Optional;
 
 import dagger.Provides;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Qualifier;
@@ -96,6 +97,9 @@ abstract class Key {
     private TypeElement getSetElement() {
       return elements.getTypeElement(Set.class.getCanonicalName());
     }
+    private TypeElement getMapElement() {
+      return elements.getTypeElement(Map.class.getCanonicalName());
+    }
 
     Key forProvidesMethod(ExecutableElement e) {
       checkNotNull(e);
@@ -110,6 +114,14 @@ abstract class Key {
         case SET:
           TypeMirror setType = types.getDeclaredType(getSetElement(), returnType);
           return new AutoValue_Key(qualifier, MoreTypes.equivalence().wrap(setType));
+        case MAP:
+          TypeMirror mapType = types.getDeclaredType(getMapElement(), returnType);
+          return new AutoValue_Key(qualifier, MoreTypes.equivalence().wrap(mapType));
+        case MAP_VALUES:
+          // TODO(gak): do we want to allow people to use "covariant return" here?
+          checkArgument(returnType.getKind().equals(DECLARED));
+          checkArgument(((DeclaredType) returnType).asElement().equals(getMapElement()));
+          return new AutoValue_Key(qualifier, MoreTypes.equivalence().wrap(returnType));
         case SET_VALUES:
           // TODO(gak): do we want to allow people to use "covariant return" here?
           checkArgument(returnType.getKind().equals(DECLARED));

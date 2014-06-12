@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Sets.immutableEnumSet;
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
+import static dagger.Provides.Type.MAP;
+import static dagger.Provides.Type.MAP_VALUES;
 import static dagger.internal.codegen.InjectionAnnotations.getScopeAnnotation;
 import static javax.lang.model.element.ElementKind.CONSTRUCTOR;
 import static javax.lang.model.element.ElementKind.FIELD;
@@ -34,6 +36,7 @@ import com.google.common.collect.Sets;
 import dagger.Provides;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
@@ -77,6 +80,7 @@ abstract class ProvisionBinding extends Binding {
   abstract boolean requiresMemberInjection();
 
   private static ImmutableSet<Provides.Type> SET_BINDING_TYPES = immutableEnumSet(SET, SET_VALUES);
+  private static ImmutableSet<Provides.Type> MAP_BINDING_TYPES = immutableEnumSet(MAP, MAP_VALUES);
 
   /**
    * Returns {@code true} if the given bindings are all contributors to a set binding.
@@ -95,6 +99,25 @@ abstract class ProvisionBinding extends Binding {
           "more than one binding present, but found a non-set binding");
     }
     return setBinding;
+  }
+
+
+  /**
+   * @param bindings
+   * @return
+   */
+  public static boolean isMapBindingCollection(Iterable<ProvisionBinding> bindings) {
+    checkNotNull(bindings);
+    Iterator<ProvisionBinding> iterator = bindings.iterator();
+    checkArgument(iterator.hasNext(), "no bindings");
+    boolean mapBinding = MAP_BINDING_TYPES.contains(iterator.next().provisionType());
+    while (iterator.hasNext()) {
+      checkArgument(mapBinding,
+          "more than one binding present, but found a non-set binding");
+      checkArgument(MAP_BINDING_TYPES.contains(iterator.next().provisionType()),
+          "more than one binding present, but found a non-set binding");
+    }
+    return mapBinding;
   }
 
   static final class Factory {
@@ -151,4 +174,5 @@ abstract class ProvisionBinding extends Binding {
           false);
     }
   }
+
 }

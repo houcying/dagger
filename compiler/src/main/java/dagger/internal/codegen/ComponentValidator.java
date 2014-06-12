@@ -60,9 +60,8 @@ final class ComponentValidator implements Validator<TypeElement> {
     AnnotationMirror componentMirror = getAnnotationMirror(subject, Component.class).get();
     ImmutableList<TypeMirror> moduleTypes =
         ConfigurationAnnotations.getComponentModules(elements, componentMirror);
-
     // TODO(gak): make unused modules an error
-    for (TypeMirror moduleType: moduleTypes) {
+    for (TypeMirror moduleType : moduleTypes) {
       moduleType.accept(new SimpleTypeVisitor6<Void, Void>() {
         @Override
         protected Void defaultAction(TypeMirror e, Void p) {

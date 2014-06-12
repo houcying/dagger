@@ -58,7 +58,7 @@ abstract class SourceFileGenerator<T> {
       boolean thrownWriting = false;
       try {
         write(generatedTypeName, writer, input);
-        return generatedTypeName;
+      return generatedTypeName;
       } catch (Exception e) {
         thrownWriting = true;
         throw new SourceFileGenerationException(generatedTypeName, e,

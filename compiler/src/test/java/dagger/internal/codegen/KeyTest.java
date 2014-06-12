@@ -107,7 +107,7 @@ public class KeyTest {
 
   @Qualifier
   @interface TestQualifier {}
-
+/*
   @Test public void forProvidesMethod_sets() {
     Elements elements = compilationRule.getElements();
     Types types = compilationRule.getTypes();
@@ -122,7 +122,7 @@ public class KeyTest {
           .isEqualTo(Key.create(setOfStringsType));
     }
   }
-
+*/
   @Module(library = true)
   static final class SetProvidesMethodsModule {
     @Provides(type = SET) String provideString() {

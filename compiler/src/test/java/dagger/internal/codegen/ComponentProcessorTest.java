@@ -28,6 +28,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+
+
 @RunWith(JUnit4.class)
 public class ComponentProcessorTest {
   @Test public void componentOnConcreteClass() {
@@ -224,8 +226,9 @@ public class ComponentProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(generatedComponent);
   }
-
+/*
   @Test public void setBindings() {
+    System.out.println("entering setbinding");
     JavaFileObject emptySetModuleFile = JavaFileObjects.forSourceLines("test.EmptySetModule",
         "package test;",
         "",
@@ -303,4 +306,91 @@ public class ComponentProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(generatedComponent);
   }
+
+  @Test public void mapBindings() {
+    System.out.println("Entering map");
+    JavaFileObject emptyMapModuleFile = JavaFileObjects.forSourceLines("test.EmptyMapModule",
+        "package test;",
+        "",
+        "import static dagger.Provides.Type.MAP_VALUES;",
+        "",
+        "import dagger.Module;",
+        "import dagger.Provides;",
+        "import java.util.Collections;",
+        "import java.util.Map;",
+        "",
+        "@Module",
+        "final class EmptyMapModule {",
+        "  @Provides(type = MAP_VALUES) Map<String, String> emptyMap() { return Collections.emptyMap(); }",
+        "}");
+    JavaFileObject mapModuleFile = JavaFileObjects.forSourceLines("test.MapModule",
+        "package test;",
+        "",
+        "import java.util.Map;",  
+        "import java.util.HashMap;",
+        "import static dagger.Provides.Type.MAP;",
+        "import dagger.Module;",
+        "import dagger.Provides;",
+        "",
+        "@Module",
+        "final class MapModule {",
+        "Map<String, String> map = new HashMap<String, String>();",
+        "map.put(\"hello\", \"world\")",
+        "Map.Entry<String, String> e = map.entrySet().iterator().next();",
+        "  @Provides(type = MAP) Map.Entry<String, String> string() { return null; }",
+        "}");
+    JavaFileObject componentFile = JavaFileObjects.forSourceLines("test.TestComponent",
+        "package test;",
+        "",
+        "import dagger.Component;",
+        "import java.util.Map;",
+        "",
+        "import javax.inject.Provider;",
+        "",
+        "@Component(modules = {EmptyMapModule.class, MapModule.class})",
+        "interface TestComponent {",
+        "  Map<String, String> strings();",
+        "}");
+    JavaFileObject generatedComponent = JavaFileObjects.forSourceLines(
+        "test.Dagger_TestComponent",
+        "package test;",
+        "",
+        "import dagger.internal.MapFactory;",
+        "import java.util.Map;",
+        "import javax.annotation.Generated;",
+        "import javax.inject.Provider;",
+        "",
+        "@Generated(\"dagger.internal.codegen.ComponentProcessor\")",
+        "public final class Dagger_TestComponent implements TestComponent {",
+        "  private final EmptyMapModule emptyMapModule;",
+        "  private final MapModule mapModule;",
+        "  private final Provider<Map<String, String>> mapOfStringProvider;",
+        "",
+        "  public Dagger_TestComponent(EmptyMapModule emptyMapModule, MapModule mapModule) {",
+        "    if (emptyMapModule == null) {",
+        "      throw new NullPointerException(\"emptyMapModule\");",
+        "    }",
+        "    this.emptyMapModule = emptyMapModule;",
+        "    if (mapModule == null) {",
+        "      throw new NullPointerException(\"mapModule\");",
+        "    }",
+        "    this.mapModule = mapModule;",
+        "    this.mapOfStringProvider = MapFactory.create(",
+        "        new EmptyMapModule$$EmptyMapFactory(emptyMapModule),",
+        "        new MapModule$$StringFactory(mapModule));",
+        "  }",
+        "",
+        "  @Override public Map<String, String> strings() {",
+        "    return mapOfStringProvider.get();",
+        "  }",
+        "}");
+    //, mapModuleFile, componentFile
+    ASSERT.about(javaSources())
+        .that(ImmutableList.of(emptyMapModuleFile, mapModuleFile, componentFile))
+        .processedWith(new ComponentProcessor())
+        .compilesWithoutError()
+        .and().generatesSources(generatedComponent);
+  }  
+  */
+
 }
