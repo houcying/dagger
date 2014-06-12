@@ -23,8 +23,8 @@ class DripCoffeeModule {
   @Provides(type = SET) Flavor vanilla() {
     return new Flavor("vanilla");
   }
-/*
+
   @Provides(type = MAP) Map.Entry<String, String> china() {
     return new MyLocation<String, String>("Monka", "US");
-  }*/
+  }
 }

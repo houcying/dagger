@@ -226,7 +226,7 @@ public class ComponentProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(generatedComponent);
   }
-/*
+
   @Test public void setBindings() {
     System.out.println("entering setbinding");
     JavaFileObject emptySetModuleFile = JavaFileObjects.forSourceLines("test.EmptySetModule",
@@ -391,6 +391,6 @@ public class ComponentProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(generatedComponent);
   }  
-  */
+  
 
 }
