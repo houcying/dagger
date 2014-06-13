@@ -308,7 +308,7 @@ public class ComponentProcessorTest {
   }
 
   @Test public void mapBindings() {
-    System.out.println("Entering map");
+    System.out.println("entering mapbinding");
     JavaFileObject emptyMapModuleFile = JavaFileObjects.forSourceLines("test.EmptyMapModule",
         "package test;",
         "",
@@ -326,17 +326,13 @@ public class ComponentProcessorTest {
     JavaFileObject mapModuleFile = JavaFileObjects.forSourceLines("test.MapModule",
         "package test;",
         "",
-        "import java.util.Map;",  
-        "import java.util.HashMap;",
         "import static dagger.Provides.Type.MAP;",
+        "",
         "import dagger.Module;",
         "import dagger.Provides;",
         "",
         "@Module",
         "final class MapModule {",
-        "Map<String, String> map = new HashMap<String, String>();",
-        "map.put(\"hello\", \"world\")",
-        "Map.Entry<String, String> e = map.entrySet().iterator().next();",
         "  @Provides(type = MAP) Map.Entry<String, String> string() { return null; }",
         "}");
     JavaFileObject componentFile = JavaFileObjects.forSourceLines("test.TestComponent",
@@ -384,13 +380,13 @@ public class ComponentProcessorTest {
         "    return mapOfStringProvider.get();",
         "  }",
         "}");
-    //, mapModuleFile, componentFile
     ASSERT.about(javaSources())
         .that(ImmutableList.of(emptyMapModuleFile, mapModuleFile, componentFile))
         .processedWith(new ComponentProcessor())
         .compilesWithoutError()
         .and().generatesSources(generatedComponent);
-  }  
+  }
+ 
   
 
 }
