@@ -321,7 +321,7 @@ public class ComponentProcessorTest {
         "",
         "@Module",
         "final class EmptyMapModule {",
-        "  @Provides(type = MAP_VALUES) Map<String, String> emptyMap() { return Collections.emptyMap(); }",
+        "  @Provides(type = MAP_VALUES) @ForPath(ADMIN) Map<String, String> emptyMap() { return Collections.emptyMap(); }",
         "}");
     JavaFileObject mapModuleFile = JavaFileObjects.forSourceLines("test.MapModule",
         "package test;",
