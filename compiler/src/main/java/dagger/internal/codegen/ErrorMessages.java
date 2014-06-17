@@ -90,6 +90,12 @@ final class ErrorMessages {
 
   static final String PROVIDES_METHOD_SET_VALUES_RETURN_SET =
       "@Provides methods of type set values must return a Set";
+  
+  static final String PROVIDES_METHOD_MAP_VALUES_RAW_MAP =
+      "@Provides methods of type map values cannot return a raw Map";
+
+  static final String PROVIDES_METHOD_MAP_VALUES_RETURN_MAP =
+      "@Provides methods of type map values must return a Map";
 
   static final String PROVIDES_METHOD_MUST_RETURN_A_VALUE =
       "@Provides methods must return a value (not void).";

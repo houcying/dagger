@@ -47,6 +47,7 @@ public final class SetFactory<T> implements Factory<Set<T>> {
     if (rest == null) {
       throw new NullPointerException();
     }
+
     Set<Provider<Set<T>>> contributingProviders = newLinkedHashSetWithExpectedSize(1 + rest.length);
     contributingProviders.add(first);
     for (Provider<Set<T>> provider : rest) {

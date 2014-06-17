@@ -24,6 +24,8 @@ import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_PRIVATE;
 import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_RETURN_TYPE;
 import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_SET_VALUES_RAW_SET;
 import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_SET_VALUES_RETURN_SET;
+import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_MAP_VALUES_RAW_MAP;
+import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_MAP_VALUES_RETURN_MAP;
 import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_STATIC;
 import static dagger.internal.codegen.ErrorMessages.PROVIDES_METHOD_TYPE_PARAMETER;
 import static javax.lang.model.element.Modifier.ABSTRACT;
@@ -38,6 +40,9 @@ import com.google.common.collect.Iterables;
 import dagger.Module;
 import dagger.Provides;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.lang.model.element.Element;
@@ -65,6 +70,11 @@ final class ProvidesMethodValidator implements Validator<ExecutableElement> {
   private TypeElement getSetElement() {
     return elements.getTypeElement(Set.class.getCanonicalName());
   }
+  
+  private TypeElement getMapElement() {
+    return elements.getTypeElement(Map.class.getCanonicalName());
+  }
+
 
   @Override
   public ValidationReport<ExecutableElement> validate(ExecutableElement providesMethodElement) {
@@ -109,6 +119,7 @@ final class ProvidesMethodValidator implements Validator<ExecutableElement> {
         break;
       case MAP:
         validateKeyType(builder, returnType);
+        break;
       case SET_VALUES:
         if (!returnTypeKind.equals(DECLARED)) {
           builder.addItem(PROVIDES_METHOD_SET_VALUES_RETURN_SET, providesMethodElement);
@@ -122,6 +133,26 @@ final class ProvidesMethodValidator implements Validator<ExecutableElement> {
           } else {
             validateKeyType(builder,
                 Iterables.getOnlyElement(declaredReturnType.getTypeArguments()));
+          }
+        }
+        break;
+      case MAP_VALUES:
+        if (!returnTypeKind.equals(DECLARED)) {
+          builder.addItem(PROVIDES_METHOD_MAP_VALUES_RETURN_MAP, providesMethodElement);
+        } else {
+          DeclaredType declaredReturnType = (DeclaredType) returnType;
+          // TODO(gak): should we allow "covariant return" for set values?
+          if (!declaredReturnType.asElement().equals(getMapElement())) {
+            builder.addItem(PROVIDES_METHOD_MAP_VALUES_RETURN_MAP, providesMethodElement);
+          } else if (declaredReturnType.getTypeArguments().isEmpty()) {
+            builder.addItem(PROVIDES_METHOD_MAP_VALUES_RAW_MAP, providesMethodElement);
+          } else {
+            for (TypeMirror type: declaredReturnType.getTypeArguments()) {
+              List<TypeMirror> tmp = new ArrayList<TypeMirror>();
+              tmp.add(type);
+              validateKeyType(builder,
+                  Iterables.getOnlyElement(tmp));
+            }
           }
         }
         break;

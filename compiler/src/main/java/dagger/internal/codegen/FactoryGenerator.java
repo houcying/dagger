@@ -222,6 +222,10 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
           writer.emitStatement("return Collections.singletonMap(module.%s(%s))",
               binding.bindingElement().getSimpleName(), parameterString);
         break;
+        case MAP_VALUES:
+          writer.emitStatement("return module.%s(%s)",
+              binding.bindingElement().getSimpleName(), parameterString);
+        break;
         default:
           throw new AssertionError();
       }
