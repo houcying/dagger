@@ -1,5 +1,7 @@
 package coffee;
 
+import static dagger.Provides.Type.SET;
+
 import dagger.Module;
 import dagger.Provides;
 
@@ -7,5 +9,9 @@ import dagger.Provides;
 class PumpModule {
   @Provides Pump providePump(Thermosiphon pump) {
     return pump;
+  }
+  
+  @Provides(type = SET) Flavor providesChocoloateFlavor() {
+    return new Flavor("chocolate");
   }
 }
