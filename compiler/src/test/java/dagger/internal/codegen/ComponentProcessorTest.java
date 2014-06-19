@@ -377,6 +377,7 @@ public class ComponentProcessorTest {
         "  }",
         "",
         "  @Override public Map<String, String> strings() {",
+        "     "
         "    return mapOfStringProvider.get();",
         "  }",
         "}");
