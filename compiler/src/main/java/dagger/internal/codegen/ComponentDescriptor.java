@@ -35,6 +35,7 @@ import dagger.Component;
 import dagger.MembersInjector;
 import dagger.Module;
 import dagger.Provides;
+import static dagger.Provides.Type.MAP;
 
 import java.util.Deque;
 import java.util.LinkedHashSet;

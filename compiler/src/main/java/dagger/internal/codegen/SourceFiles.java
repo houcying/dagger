@@ -199,6 +199,8 @@ class SourceFiles {
       final String name;
       if (ProvisionBinding.isSetBindingCollection(bindingsForKey)) {
         name = new KeyVariableNamer().apply(entry.getKey()) + "Provider";
+      } else if (ProvisionBinding.isMapBindingCollection(bindingsForKey)) {
+        name = new KeyVariableNamer().apply(entry.getKey()) + "Provider";
       } else {
         ProvisionBinding binding = Iterables.getOnlyElement(bindingsForKey);
         name = binding.bindingElement().accept(

@@ -20,22 +20,35 @@ import com.google.common.base.Equivalence;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+
 import dagger.Provides;
+import dagger.internal.codegen.Util.CodeGenerationIncompleteException;
+
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Provider;
 import javax.inject.Qualifier;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.AnnotationValueVisitor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleAnnotationValueVisitor6;
 import javax.lang.model.util.Types;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static dagger.internal.codegen.InjectionAnnotations.getQualifier;
+import static dagger.internal.codegen.InjectionAnnotations.getMapKey;
 import static javax.lang.model.element.ElementKind.CONSTRUCTOR;
 import static javax.lang.model.element.ElementKind.METHOD;
 import static javax.lang.model.type.TypeKind.DECLARED;
@@ -105,11 +118,21 @@ abstract class Key {
     private TypeElement getSetElement() {
       return elements.getTypeElement(Set.class.getCanonicalName());
     }
-
+    
+    private TypeElement getMapElement() {
+      return elements.getTypeElement(Map.class.getCanonicalName());
+      //return elements.getTypeElement(Map.class.getCanonicalName());
+    }
+    
+    private TypeElement getProviderElement() {
+      return elements.getTypeElement(Provider.class.getCanonicalName());
+    }
+    
     Key forProvidesMethod(ExecutableElement e) {
       checkNotNull(e);
+      e.getTypeParameters();
       checkArgument(e.getKind().equals(METHOD));
-      Provides providesAnnotation = e.getAnnotation(Provides.class);
+      Provides providesAnnotation = e.getAnnotation(Provides.class); 
       checkArgument(providesAnnotation != null);
       TypeMirror returnType = normalize(e.getReturnType());
       Optional<AnnotationMirror> qualifier = getQualifier(e);
@@ -119,6 +142,22 @@ abstract class Key {
         case SET:
           TypeMirror setType = types.getDeclaredType(getSetElement(), returnType);
           return new AutoValue_Key(rewrap(qualifier), MoreTypes.equivalence().wrap(setType));
+        case MAP:
+          ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
+          Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
+          AnnotationValueVisitor<Object, Void> v1 = 
+              new SimpleAnnotationValueVisitor6<Object, Void>() {
+            @Override public TypeElement visitEnumConstant(VariableElement c, Void p) {
+              return (TypeElement) c.getEnclosingElement();
+            }
+            @Override public TypeElement visitString(String s, Void p) {
+              return elements.getTypeElement(String.class.getCanonicalName());
+            }
+          };
+          TypeElement keyTypeElement = (TypeElement) map.entrySet().iterator().next().getValue().accept(v1, null);
+          TypeMirror valueType = types.getDeclaredType(getProviderElement(), returnType);
+          TypeMirror mapType = types.getDeclaredType(getMapElement(), keyTypeElement.asType(), valueType);
+          return new AutoValue_Key(rewrap(qualifier), MoreTypes.equivalence().wrap(mapType));
         case SET_VALUES:
           // TODO(gak): do we want to allow people to use "covariant return" here?
           checkArgument(returnType.getKind().equals(DECLARED));

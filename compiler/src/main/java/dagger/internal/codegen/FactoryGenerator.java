@@ -40,6 +40,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
+
 import com.squareup.javawriter.JavaWriter;
 
 import dagger.Factory;
@@ -49,6 +50,7 @@ import dagger.Provides;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -58,7 +60,9 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -97,7 +101,17 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
   @Override
   void write(ClassName factoryClassName, JavaWriter writer, ProvisionBinding binding)
       throws IOException {
-    TypeMirror providedType = binding.providedKey().type();
+    TypeMirror providedType = null;
+    if (binding.provisionType().equals(Provides.Type.MAP)) {
+      DeclaredType t = (DeclaredType) binding.providedKey().type();
+      List<? extends TypeMirror> typeListForMap = t.getTypeArguments();
+      DeclaredType tp = (DeclaredType)typeListForMap.get(1);
+      
+      List<? extends TypeMirror> typeListForProvider = tp.getTypeArguments();
+      providedType = typeListForProvider.get(0);
+    } else {
+      providedType = binding.providedKey().type();
+    }
     String providedTypeString = Util.typeToString(providedType);
 
     writer.emitPackage(factoryClassName.packageName());
@@ -106,7 +120,7 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
 
     writer.emitAnnotation(Generated.class, stringLiteral(ComponentProcessor.class.getName()))
         .beginType(factoryClassName.simpleName(), "class", EnumSet.of(PUBLIC, FINAL), null,
-            type(Factory.class, Util.typeToString(binding.providedKey().type())));
+            type(Factory.class, Util.typeToString(providedType)));
 
     final ImmutableBiMap<Key, String> providerNames =
         generateProviderNamesForDependencies(binding.dependencies());
@@ -149,6 +163,9 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
             .add(ClassName.fromClass(Generated.class));
     if (binding.provisionType().equals(Provides.Type.SET)) {
       importsBuilder.add(ClassName.fromClass(Collections.class));
+    }
+    if (binding.provisionType().equals(Provides.Type.MAP)) {
+      //TODO add implementation for mapbinding
     }
     if (binding.requiresMemberInjection()) {
       importsBuilder.add(ClassName.fromClass(MembersInjector.class));
@@ -214,6 +231,7 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
               }
             }));
     if (binding.bindingKind().equals(PROVISION)) {
+      //check whether there are mapbinding
       switch (binding.provisionType()) {
         case UNIQUE:
         case SET_VALUES:
@@ -222,6 +240,11 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
           break;
         case SET:
           writer.emitStatement("return Collections.singleton(module.%s(%s))",
+              binding.bindingElement().getSimpleName(), parameterString);
+          break;
+        case MAP:
+          //TODO add implementation for mapbinding
+          writer.emitStatement("return module.%s(%s)",
               binding.bindingElement().getSimpleName(), parameterString);
           break;
         default:

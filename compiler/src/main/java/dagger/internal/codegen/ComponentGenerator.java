@@ -32,18 +32,24 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
 import com.squareup.javawriter.JavaWriter;
+
 import dagger.Component;
 import dagger.MembersInjector;
 import dagger.internal.InstanceFactory;
+import dagger.internal.MapProviderFactory;
 import dagger.internal.ScopedProvider;
 import dagger.internal.SetFactory;
+
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.inject.Provider;
@@ -61,6 +67,7 @@ import javax.lang.model.util.Types;
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.squareup.javawriter.JavaWriter.stringLiteral;
+import static dagger.Provides.Type.MAP;
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
 import static dagger.internal.codegen.DependencyRequest.Kind.MEMBERS_INJECTOR;
@@ -176,6 +183,9 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
       if (binding.provisionType().equals(SET) || binding.provisionType().equals(SET_VALUES)) {
         importsBuilder.add(ClassName.fromClass(SetFactory.class));
       }
+      if (binding.provisionType().equals(MAP)) {
+        importsBuilder.add(ClassName.fromClass(MapProviderFactory.class));
+      }
       if (binding.requiresMemberInjection()) {
         importsBuilder.add(ClassName.fromClass(MembersInjector.class));
       }
@@ -269,6 +279,15 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
           writer.emitStatement("this.%s = SetFactory.create(%n%s)",
               providerNames.get(key),
               Joiner.on(",\n").join(setFactoryParameters.build()));
+        } else if (ProvisionBinding.isMapBindingCollection(bindings)) {
+          ImmutableList.Builder<String> mapFactoryParameters = ImmutableList.builder();
+          for (ProvisionBinding binding : bindings) {
+            mapFactoryParameters.add(initializeFactoryForBinding(
+                writer, binding, moduleNames, providerNames,membersInjectorNames));
+          }
+          writer.emitStatement("this.%s = MapProviderFactory.create(%n%s)",
+              providerNames.get(key),
+              Joiner.on(",\n").join(mapFactoryParameters.build()));
         } else {
           ProvisionBinding binding = Iterables.getOnlyElement(bindings);
           writer.emitStatement("this.%s = %s",
