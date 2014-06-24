@@ -70,6 +70,10 @@ final class InjectionAnnotations {
   static ImmutableSet<? extends AnnotationMirror> getScopes(Element element) {
     return getAnnotatedAnnotations(element, Scope.class);
   }
+  
+  static ImmutableSet<? extends AnnotationMirror> getMapKey(Element element) {
+    return getAnnotatedAnnotations(element, MapKey.class);
+  }
 
   private static ImmutableSet<? extends AnnotationMirror> getAnnotatedAnnotations(Element element,
       final Class<? extends Annotation> annotationType) {

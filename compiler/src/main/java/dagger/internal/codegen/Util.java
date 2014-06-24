@@ -31,6 +31,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -196,7 +197,6 @@ final class Util {
           return result;
         }
       };
-
   /**
    * Returns the annotation on {@code element} formatted as a Map. This returns
    * a Map rather than an instance of the annotation interface to work-around

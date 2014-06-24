@@ -36,6 +36,7 @@ import javax.lang.model.util.Types;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Sets.immutableEnumSet;
+import static dagger.Provides.Type.MAP;
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
 import static dagger.internal.codegen.InjectionAnnotations.getScopeAnnotation;
@@ -80,6 +81,7 @@ abstract class ProvisionBinding extends Binding {
   abstract boolean requiresMemberInjection();
 
   private static ImmutableSet<Provides.Type> SET_BINDING_TYPES = immutableEnumSet(SET, SET_VALUES);
+  private static ImmutableSet<Provides.Type> MAP_BINDING_TYPES = immutableEnumSet(MAP);
 
   /**
    * Returns {@code true} if the given bindings are all contributors to a set binding.
@@ -90,14 +92,31 @@ abstract class ProvisionBinding extends Binding {
     checkNotNull(bindings);
     Iterator<ProvisionBinding> iterator = bindings.iterator();
     checkArgument(iterator.hasNext(), "no bindings");
-    boolean setBinding = SET_BINDING_TYPES.contains(iterator.next().provisionType());
-    while (iterator.hasNext()) {
+    ProvisionBinding temp = iterator.next();
+    boolean setBinding = SET_BINDING_TYPES.contains(temp.provisionType());
+    boolean mapBinding = MAP_BINDING_TYPES.contains(temp.provisionType());
+    while (iterator.hasNext() && !mapBinding) {
       checkArgument(setBinding,
-          "more than one binding present, but found a non-set binding");
+          "more than one binding present, but found a non-map or non-set binding");
       checkArgument(SET_BINDING_TYPES.contains(iterator.next().provisionType()),
-          "more than one binding present, but found a non-set binding");
+          "more than one binding present, but found a non-map or non-set binding");
     }
     return setBinding;
+  }
+  
+  static boolean isMapBindingCollection(Iterable<ProvisionBinding> bindings) {
+    checkNotNull(bindings);
+    Iterator<ProvisionBinding> iterator = bindings.iterator();
+    checkArgument(iterator.hasNext(), "no bindings");
+    ProvisionBinding temp = iterator.next();
+    boolean mapBinding = MAP_BINDING_TYPES.contains(temp.provisionType());
+    while (iterator.hasNext()) {
+      checkArgument(mapBinding,
+          "more than one binding present, but found a non-map or set binding");
+      checkArgument(MAP_BINDING_TYPES.contains(iterator.next().provisionType()),
+          "more than one binding present, but found a non-map or set binding");
+    }
+    return mapBinding;
   }
 
   static final class Factory {

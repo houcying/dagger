@@ -5,3 +5,4 @@ interface Heater {
   void off();
   boolean isHot();
 }
+

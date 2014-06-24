@@ -14,3 +14,4 @@ class CoffeeMaker {
     heater.get().off();
   }
 }
+
