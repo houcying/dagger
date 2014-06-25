@@ -59,6 +59,7 @@ public final class ComponentProcessor extends AbstractProcessor {
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
+    System.out.println("Entering componentprocessor init");
     super.init(processingEnv);
 
     Messager messager = processingEnv.getMessager();
@@ -119,7 +120,9 @@ public final class ComponentProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    System.out.println("Entering componentProcessor process");
     for (ProcessingStep processingStep : processingSteps) {
+      System.out.println("Begin to process processingStep: " + processingStep.toString());
       processingStep.process(annotations, roundEnv);
     }
     return false;

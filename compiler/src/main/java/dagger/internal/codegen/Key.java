@@ -145,7 +145,7 @@ abstract class Key {
         case MAP:
           ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
           Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
-          AnnotationValueVisitor<Object, Void> v1 = 
+          AnnotationValueVisitor<Object, Void> mapKeyVisitor = 
               new SimpleAnnotationValueVisitor6<Object, Void>() {
             @Override public TypeElement visitEnumConstant(VariableElement c, Void p) {
               return (TypeElement) c.getEnclosingElement();
@@ -154,7 +154,7 @@ abstract class Key {
               return elements.getTypeElement(String.class.getCanonicalName());
             }
           };
-          TypeElement keyTypeElement = (TypeElement) map.entrySet().iterator().next().getValue().accept(v1, null);
+          TypeElement keyTypeElement = (TypeElement) map.entrySet().iterator().next().getValue().accept(mapKeyVisitor, null);
           TypeMirror valueType = types.getDeclaredType(getProviderElement(), returnType);
           TypeMirror mapType = types.getDeclaredType(getMapElement(), keyTypeElement.asType(), valueType);
           return new AutoValue_Key(rewrap(qualifier), MoreTypes.equivalence().wrap(mapType));

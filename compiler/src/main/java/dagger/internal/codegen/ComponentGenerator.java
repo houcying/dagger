@@ -43,7 +43,6 @@ import dagger.internal.SetFactory;
 
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -237,7 +236,7 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
     writer.emitEmptyLine();
   }
 
-  private void writeConstructor(final JavaWriter writer,
+  private void writeConstructor(final JavaWriter writer,  
       ImmutableList<FrameworkKey> initializationOrdering,
       ImmutableSetMultimap<Key, ProvisionBinding> resolvedProvisionBindings,
       ImmutableMap<Key, MembersInjectionBinding> resolvedMembersInjectionBindings,
