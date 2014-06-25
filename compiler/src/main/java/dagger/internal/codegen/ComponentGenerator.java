@@ -265,7 +265,9 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
       Key key = frameworkKey.key();
       if (frameworkKey.frameworkClass().equals(Provider.class)) {
         Set<ProvisionBinding> bindings = resolvedProvisionBindings.get(key);
-        if (ProvisionBinding.isSetBindingCollection(bindings)) {
+        boolean setBinding;
+        boolean mapBinding;
+        if ((setBinding = ProvisionBinding.isSetBindingCollection(bindings)) == true) {
           ImmutableList.Builder<String> setFactoryParameters = ImmutableList.builder();
           for (ProvisionBinding binding : bindings) {
             setFactoryParameters.add(initializeFactoryForBinding(
@@ -274,7 +276,7 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
           writer.emitStatement("this.%s = SetFactory.create(%n%s)",
               providerNames.get(key),
               Joiner.on(",\n").join(setFactoryParameters.build()));
-        } else if (ProvisionBinding.isMapBindingCollection(bindings)) {
+        } else if ((mapBinding = ProvisionBinding.isMapBindingCollection(bindings)) == true) {
           ImmutableList.Builder<String> mapFactoryParameters = ImmutableList.builder();
           for (ProvisionBinding binding : bindings) {
             mapFactoryParameters.add(initializeFactoryForBinding(
@@ -283,7 +285,7 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
           writer.emitStatement("this.%s = MapProviderFactory.create(%n%s)",
               providerNames.get(key),
               Joiner.on(",\n").join(mapFactoryParameters.build()));
-        } else {
+        } else if (ProvisionBinding.isNotACollection(setBinding, mapBinding, bindings)) {
           ProvisionBinding binding = Iterables.getOnlyElement(bindings);
           writer.emitStatement("this.%s = %s",
               providerNames.get(key),

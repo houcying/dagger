@@ -145,6 +145,7 @@ abstract class Key {
         case MAP:
           ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
           Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
+          //Support String and Enum map key type
           AnnotationValueVisitor<Object, Void> mapKeyVisitor = 
               new SimpleAnnotationValueVisitor6<Object, Void>() {
             @Override public TypeElement visitEnumConstant(VariableElement c, Void p) {

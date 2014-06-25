@@ -97,6 +97,7 @@ abstract class ComponentDescriptor {
    * {@link MembersInjector} implementations to initialize properly.
    */
   abstract ImmutableList<FrameworkKey> initializationOrdering();
+  
 
   static final class Factory {
     private final Elements elements;

@@ -94,29 +94,52 @@ abstract class ProvisionBinding extends Binding {
     checkArgument(iterator.hasNext(), "no bindings");
     ProvisionBinding temp = iterator.next();
     boolean setBinding = SET_BINDING_TYPES.contains(temp.provisionType());
-    boolean mapBinding = MAP_BINDING_TYPES.contains(temp.provisionType());
-    while (iterator.hasNext() && !mapBinding) {
-      checkArgument(setBinding,
-          "more than one binding present, but found a non-map or non-set binding");
-      checkArgument(SET_BINDING_TYPES.contains(iterator.next().provisionType()),
-          "more than one binding present, but found a non-map or non-set binding");
+    if (setBinding) {
+      while (iterator.hasNext()) {
+        checkArgument(setBinding,
+            "more than one binding present, but found a non-set binding");
+        checkArgument(SET_BINDING_TYPES.contains(iterator.next().provisionType()),
+            "more than one binding present, but found a non-set binding");
+      }
     }
     return setBinding;
   }
-  
+
+  /**
+   * Returns {@code true} if the given bindings are all contributors to a map binding.
+   *
+   * @throws IllegalArgumentException if some of the bindings are map bindings and some are not.
+   */
   static boolean isMapBindingCollection(Iterable<ProvisionBinding> bindings) {
     checkNotNull(bindings);
     Iterator<ProvisionBinding> iterator = bindings.iterator();
     checkArgument(iterator.hasNext(), "no bindings");
     ProvisionBinding temp = iterator.next();
     boolean mapBinding = MAP_BINDING_TYPES.contains(temp.provisionType());
-    while (iterator.hasNext()) {
-      checkArgument(mapBinding,
-          "more than one binding present, but found a non-map or set binding");
-      checkArgument(MAP_BINDING_TYPES.contains(iterator.next().provisionType()),
-          "more than one binding present, but found a non-map or set binding");
+    if (mapBinding) {
+      while (iterator.hasNext()) {
+        checkArgument(mapBinding,
+            "more than one binding present, but found a non-map binding");
+        checkArgument(MAP_BINDING_TYPES.contains(iterator.next().provisionType()),
+            "more than one binding present, but found a non-map binding");
+      }
     }
     return mapBinding;
+  }
+  
+  /**
+   * Returns {@code true} if the given bindings is not a collection.
+   *
+   * @throws IllegalArgumentException if the bindings in the collection are not supported in Dagger.
+   */
+  static boolean isNotACollection(boolean setBinding, boolean mapBinding, Iterable<ProvisionBinding> bindings) {
+    Iterator<ProvisionBinding> iterator = bindings.iterator();
+    ProvisionBinding temp = iterator.next();
+    if (iterator.hasNext()) {
+      checkArgument(mapBinding || setBinding,
+          "more than one binding present, but found a invalid binding");
+    }
+    return !(mapBinding || setBinding);
   }
 
   static final class Factory {
