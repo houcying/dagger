@@ -20,12 +20,12 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>>{
   
   public static <K, V> Factory<Map<K, Provider<V>>> create(ImmutableMap<K, Provider<V>> map) {
     return new MapProviderFactory<K, V>();
-    
   }
   
-  public static <K, V> ImmutableMap.Builder<K, Provider<V>> builder() {
+  public static <K, V> ImmutableMap.Builder<K, Provider<V>> builder(K k, Provider<V> pv) {
     //TODO (houcy)
     return ImmutableMap.<K, Provider<V>>builder();
+    //OR return new ImmutableMap.Builder<K, Provider<V>>();
   }
   
   

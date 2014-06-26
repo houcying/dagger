@@ -287,6 +287,7 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
         } else if ((mapBinding = ProvisionBinding.isMapBindingCollection(bindings)) == true) {
           ImmutableList.Builder<String> mapFactoryParameters = ImmutableList.builder();
           mapFactoryParameters.add(providerNames.get(key));
+          boolean isFirst = true;
           for (ProvisionBinding binding : bindings) {
             ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(binding.bindingElement());
             Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
@@ -294,10 +295,18 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
             mapFactoryParameters.add(map.entrySet().iterator().next().getValue().toString());
             mapFactoryParameters.add(initializeFactoryForBinding(
                 writer, binding, moduleNames, providerNames,membersInjectorNames));
+            if (isFirst) {
+              mapFactoryParameters.add(map.entrySet().iterator().next().getValue().toString());
+              mapFactoryParameters.add(initializeFactoryForBinding(
+                  writer, binding, moduleNames, providerNames,membersInjectorNames));
+              isFirst = false;
+            }
           }
+          
           Object[] mapFactoryPara = mapFactoryParameters.build().toArray();
-          StringBuilder mapPattern = new StringBuilder("this.%s = MapProviderFactory.create(MapProviderFactory.builder()");
-          for (int i = 0; i < mapFactoryParameters.build().size() - 1; i += 2) {
+         
+          StringBuilder mapPattern = new StringBuilder("this.%s = MapProviderFactory.create(MapProviderFactory.builder(%s, %s)");
+          for (int i = 0; i < mapFactoryParameters.build().size() - 3; i += 2) {
             mapPattern.append("%n.put(%s, (Provider)%s)");
           }
           mapPattern.append(".build())");
