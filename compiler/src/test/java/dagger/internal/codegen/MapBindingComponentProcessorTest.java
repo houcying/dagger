@@ -104,11 +104,10 @@ public class MapBindingComponentProcessorTest {
         "interface TestComponent {",
         "  Map<PathEnum, Provider<Handler>> dispatcher();",
         "}");
-    JavaFileObject generatedComponent = JavaFileObjects.forSourceLines(
-        "test.Dagger_TestComponent",
+    JavaFileObject generatedComponent = JavaFileObjects.forSourceLines("test.Dagger_TestComponent",
         "package test;",
         "",
-        "import dagger.internal.MapFactory;",
+        "import dagger.internal.MapProviderFactory;",
         "import java.util.Map;",
         "import javax.annotation.Generated;",
         "import javax.inject.Provider;",
@@ -213,20 +212,24 @@ public class MapBindingComponentProcessorTest {
         "interface TestComponent {",
         "  Map<String, Provider<Handler>> dispatcher();",
         "}");
-    JavaFileObject generatedComponent = JavaFileObjects.forSourceLines(
-        "test.Dagger_TestComponent",
+    JavaFileObject generatedComponent = JavaFileObjects.forSourceLines("test.Dagger_TestComponent",
         "package test;",
         "",
-        "import dagger.internal.MapFactory;",
+        "import dagger.internal.MapProviderFactory;",
         "import java.util.Map;",
         "import javax.annotation.Generated;",
         "import javax.inject.Provider;",
         "",
         "@Generated(\"dagger.internal.codegen.ComponentProcessor\")",
-        "public final class Dagger_TestComponent implements TestComponent {",
+        "public final class Dagger_TestComponent",
+        "    implements TestComponent {",
         "  private final MapModuleOne mapModuleOne;",
         "  private final MapModuleTwo mapModuleTwo;",
-        "  private final Provider<Map<EnumKey.PathEnum, Provider<Handler>>> mapOfStringHandlerProvider;",
+        "/**",
+        " * Key{type=java.util.Map<java.lang.String,javax.inject.Provider<test.Handler>>}",
+        " */",
+        "  private final Provider<Map<EnumKey.PathEnum, Provider<Handler>>> mapOfStringAndProviderOfHandlerProvider;",
+        "",
         "",
         "  public Dagger_TestComponent(MapModuleOne mapModuleOne, MapModuleTwo mapModuleTwo) {",
         "    if (mapModuleOne == null) {",
@@ -237,19 +240,22 @@ public class MapBindingComponentProcessorTest {
         "      throw new NullPointerException(\"mapModuleTwo\");",
         "    }",
         "    this.mapModuleTwo = mapModuleTwo;",
-        "    this.mapOfStringHandlerProvider = MapFactoryFactory.build()",
-        "        .put(\"admin\", new ProviderAdminHandlerFactory(mapModuleOne))",
-        "        .put(\"login\", new ProviderLoginHandlerFactory(mapModuleTwo));",
+        "    this.mapOfStringAndProviderOfHandlerProvider = MapProviderFactory.builder()",
+        "        .put(\"Admin\", new MapModuleOne$$ProvideAdminHandlerFactory(mapModuleOne))",
+        "        .put(\"Login\", new MapModuleTwo$$ProvideLoginHandlerFactory(mapModuleTwo)).build();",
         "  }",
         "",
         "  @Override public Map<String, Provider<Handler>> dispatcher() {",
         "    return mapOfStringHandlerProvider.get();",
         "  }",
         "}");
+    
+    
     ASSERT.about(javaSources())
         .that(ImmutableList.of(mapModuleOneFile, mapModuleTwoFile, stringKeyFile,HandlerFile, LoginHandlerFile, AdminHandlerFile, componentFile))
         .processedWith(new ComponentProcessor())
-        .compilesWithoutError();
-        //.and().generatesSources(generatedComponent);
+        .compilesWithoutError()
+        .and().generatesSources(generatedComponent);
   }
+  
 }

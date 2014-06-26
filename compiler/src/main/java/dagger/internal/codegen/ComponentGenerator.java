@@ -42,7 +42,9 @@ import dagger.internal.ScopedProvider;
 import dagger.internal.SetFactory;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,6 +53,8 @@ import java.util.Set;
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.inject.Provider;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -69,6 +73,7 @@ import static dagger.Provides.Type.MAP;
 import static dagger.Provides.Type.SET;
 import static dagger.Provides.Type.SET_VALUES;
 import static dagger.internal.codegen.DependencyRequest.Kind.MEMBERS_INJECTOR;
+import static dagger.internal.codegen.InjectionAnnotations.getMapKey;
 import static dagger.internal.codegen.ProvisionBinding.Kind.COMPONENT;
 import static dagger.internal.codegen.ProvisionBinding.Kind.PROVISION;
 import static dagger.internal.codegen.SourceFiles.collectImportsFromDependencies;
@@ -133,6 +138,9 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
 
     ImmutableSetMultimap<Key, ProvisionBinding> resolvedProvisionBindings =
         input.resolvedProvisionBindings();
+    
+    
+    
     ImmutableMap<Key, MembersInjectionBinding> resolvedMembersInjectionBindings =
         input.resolvedMembersInjectionBindings();
 
@@ -278,13 +286,24 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
               Joiner.on(",\n").join(setFactoryParameters.build()));
         } else if ((mapBinding = ProvisionBinding.isMapBindingCollection(bindings)) == true) {
           ImmutableList.Builder<String> mapFactoryParameters = ImmutableList.builder();
+          mapFactoryParameters.add(providerNames.get(key));
           for (ProvisionBinding binding : bindings) {
+            ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(binding.bindingElement());
+            Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
+            System.out.println("Here the value is " + map.entrySet().iterator().next().getValue());
+            mapFactoryParameters.add(map.entrySet().iterator().next().getValue().toString());
             mapFactoryParameters.add(initializeFactoryForBinding(
                 writer, binding, moduleNames, providerNames,membersInjectorNames));
           }
-          writer.emitStatement("this.%s = MapProviderFactory.create(%n%s)",
-              providerNames.get(key),
-              Joiner.on(",\n").join(mapFactoryParameters.build()));
+          Object[] mapFactoryPara = mapFactoryParameters.build().toArray();
+          StringBuilder mapPattern = new StringBuilder("this.%s = MapProviderFactory.create(MapProviderFactory.builder()");
+          for (int i = 0; i < mapFactoryParameters.build().size() - 1; i += 2) {
+            mapPattern.append("%n.put(%s, (Provider)%s)");
+          }
+          mapPattern.append(".build())");
+          System.out.println("Pattern:" + mapPattern);
+          writer.emitStatement(mapPattern.toString(),
+              mapFactoryPara);
         } else if (ProvisionBinding.isNotACollection(setBinding, mapBinding, bindings)) {
           ProvisionBinding binding = Iterables.getOnlyElement(bindings);
           writer.emitStatement("this.%s = %s",

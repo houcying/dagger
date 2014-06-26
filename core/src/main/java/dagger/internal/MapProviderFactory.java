@@ -1,9 +1,13 @@
 package dagger.internal;
 
+import com.google.common.collect.ImmutableMap;
+
 import dagger.Factory;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Provider;
 
@@ -13,25 +17,28 @@ import javax.inject.Provider;
  * @param <K>
  */
 public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>>{
- // private final Map<K, V> contributingProviders;
-  public static <K, V, T> Factory<Map<K, Provider<V>>> create(Provider<T> first,
-      @SuppressWarnings("unchecked") Provider<T>... rest) {
-        return null;
+  
+  public static <K, V> Factory<Map<K, Provider<V>>> create(ImmutableMap<K, Provider<V>> map) {
+    return new MapProviderFactory<K, V>();
     
   }
   
-  public static <K, V> Factory<Map<K, Provider<V>>> build(Map<K, V> map) {
-    return null;
+  public static <K, V> ImmutableMap.Builder<K, Provider<V>> builder() {
+    //TODO (houcy)
+    return ImmutableMap.<K, Provider<V>>builder();
   }
   
+  
+  
+  
+  private MapProviderFactory() {
+    
+  }
   @Override
   public Map<K, Provider<V>> get() {
-    return null;
+    Map m = new HashMap<K, Provider<V>>();
+    return m;
   }
   
-  public static <K, V> Map<K, V> builder() {
-    //TODO (houcy)
-    Map<K, V> result = new LinkedHashMap<K, V>();
-    return result; 
-  }
+  
 }
