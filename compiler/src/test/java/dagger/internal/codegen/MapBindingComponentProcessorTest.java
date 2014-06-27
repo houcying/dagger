@@ -113,36 +113,41 @@ public class MapBindingComponentProcessorTest {
         "import javax.inject.Provider;",
         "",
         "@Generated(\"dagger.internal.codegen.ComponentProcessor\")",
-        "public final class Dagger_TestComponent implements TestComponent {",
+        "public final class Dagger_TestComponent",
+        "    implements TestComponent {",
         "  private final MapModuleOne mapModuleOne;",
         "  private final MapModuleTwo mapModuleTwo;",
-        "  private final Provider<Map<PathEnum, Provider<Handler>>> mapOfEnumHandlerProvider;",
+        "  /**",
+        "   * Key{type=java.util.Map<test.PathEnum,javax.inject.Provider<test.Handler>>}",
+        "   */",
+        "  private final Provider<Map<PathEnum, Provider<Handler>>> mapOfPathEnumAndProviderOfHandlerProvider;",
+        "",
         "",
         "  public Dagger_TestComponent(MapModuleOne mapModuleOne, MapModuleTwo mapModuleTwo) {",
         "    if (mapModuleOne == null) {",
         "      throw new NullPointerException(\"mapModuleOne\");",
         "    }",
         "    this.mapModuleOne = mapModuleOne;",
-        "    if (mapModuletwo == null) {",
+        "    if (mapModuleTwo == null) {",
         "      throw new NullPointerException(\"mapModuleTwo\");",
         "    }",
         "    this.mapModuleTwo = mapModuleTwo;", 
-        "    this.mapOfEnumHandlerProvider = MapProviderFactory.builder()",
-        "        .put(PathEnum.ADMIN, new MapModuleOne$$ProvideAdminHandlerFactory(mapModuleOne))",
-        "        .put(PathEnum.LOGIN, MapModuleTwo$$ProvideLoginHandlerFactory(mapModuleTwo))",
+        "    this.mapOfPathEnumAndProviderOfHandlerProvider = MapProviderFactory.<test.PathEnum, test.Handler>builder(2)",
+        "        .put(test.PathEnum.ADMIN, new MapModuleOne$$ProvideAdminHandlerFactory(mapModuleOne))",
+        "        .put(test.PathEnum.LOGIN, new MapModuleTwo$$ProvideLoginHandlerFactory(mapModuleTwo))",
         "        .build();",
-        "",
         "  }",
         "",
-        "  @Override public Map<PathEnum, Provider<Handler>> dispatcher() {",
-        "    return mapOfEnumHandlerProvider.get();",
+        "  @Override",
+        "  public Map<PathEnum, Provider<Handler>> dispatcher() {",
+        "    return mapOfPathEnumAndProviderOfHandlerProvider.get();",
         "  }",
         "}");
     ASSERT.about(javaSources())
         .that(ImmutableList.of(mapModuleOneFile, mapModuleTwoFile, enumKeyFile, pathEnumFile, HandlerFile, LoginHandlerFile, AdminHandlerFile, componentFile))
         .processedWith(new ComponentProcessor())
-        .compilesWithoutError();
-        //.and().generatesSources(generatedComponent);
+        .compilesWithoutError()
+        .and().generatesSources(generatedComponent);
   }
  
   @Test public void mapBindingsWithStringKey() {
@@ -168,7 +173,7 @@ public class MapBindingComponentProcessorTest {
         "",
         "@Module",
         "final class MapModuleTwo {",
-        "  @Provides(type = MAP) @StringKey(\"login\") Handler provideLoginHandler() { return new LoginHandler(); }",
+        "  @Provides(type = MAP) @StringKey(\"Login\") Handler provideLoginHandler() { return new LoginHandler(); }",
         "}");
     JavaFileObject stringKeyFile = JavaFileObjects.forSourceLines("test.StringKey", 
         "package test;",
@@ -225,10 +230,10 @@ public class MapBindingComponentProcessorTest {
         "    implements TestComponent {",
         "  private final MapModuleOne mapModuleOne;",
         "  private final MapModuleTwo mapModuleTwo;",
-        "/**",
-        " * Key{type=java.util.Map<java.lang.String,javax.inject.Provider<test.Handler>>}",
-        " */",
-        "  private final Provider<Map<EnumKey.PathEnum, Provider<Handler>>> mapOfStringAndProviderOfHandlerProvider;",
+        "  /**",
+        "   * Key{type=java.util.Map<java.lang.String,javax.inject.Provider<test.Handler>>}",
+        "   */",
+        "  private final Provider<Map<String, Provider<Handler>>> mapOfStringAndProviderOfHandlerProvider;",
         "",
         "",
         "  public Dagger_TestComponent(MapModuleOne mapModuleOne, MapModuleTwo mapModuleTwo) {",
@@ -236,17 +241,19 @@ public class MapBindingComponentProcessorTest {
         "      throw new NullPointerException(\"mapModuleOne\");",
         "    }",
         "    this.mapModuleOne = mapModuleOne;",
-        "    if (mapModuletwo == null) {",
+        "    if (mapModuleTwo == null) {",
         "      throw new NullPointerException(\"mapModuleTwo\");",
         "    }",
         "    this.mapModuleTwo = mapModuleTwo;",
-        "    this.mapOfStringAndProviderOfHandlerProvider = MapProviderFactory.builder()",
+        "    this.mapOfStringAndProviderOfHandlerProvider = MapProviderFactory.<java.lang.String, test.Handler>builder(2)",
         "        .put(\"Admin\", new MapModuleOne$$ProvideAdminHandlerFactory(mapModuleOne))",
-        "        .put(\"Login\", new MapModuleTwo$$ProvideLoginHandlerFactory(mapModuleTwo)).build();",
+        "        .put(\"Login\", new MapModuleTwo$$ProvideLoginHandlerFactory(mapModuleTwo))",
+        "        .build();",
         "  }",
         "",
-        "  @Override public Map<String, Provider<Handler>> dispatcher() {",
-        "    return mapOfStringHandlerProvider.get();",
+        "  @Override",
+        "  public Map<String, Provider<Handler>> dispatcher() {",
+        "    return mapOfStringAndProviderOfHandlerProvider.get();",
         "  }",
         "}");
     
@@ -254,8 +261,8 @@ public class MapBindingComponentProcessorTest {
     ASSERT.about(javaSources())
         .that(ImmutableList.of(mapModuleOneFile, mapModuleTwoFile, stringKeyFile,HandlerFile, LoginHandlerFile, AdminHandlerFile, componentFile))
         .processedWith(new ComponentProcessor())
-        .compilesWithoutError();
-    //    .and().generatesSources(generatedComponent);
+        .compilesWithoutError()
+        .and().generatesSources(generatedComponent);
   }
   
 }

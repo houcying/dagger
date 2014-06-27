@@ -120,7 +120,6 @@ public final class ComponentProcessor extends AbstractProcessor {
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     for (ProcessingStep processingStep : processingSteps) {
-      System.out.println("Begin to process processingStep: " + processingStep.toString());
       processingStep.process(annotations, roundEnv);
     }
     return false;

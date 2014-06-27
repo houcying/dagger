@@ -55,15 +55,21 @@ import javax.annotation.processing.Filer;
 import javax.inject.Provider;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.AnnotationValueVisitor;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVisitor;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.SimpleAnnotationValueVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 
 import static com.google.common.base.CaseFormat.LOWER_CAMEL;
@@ -286,33 +292,45 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
               Joiner.on(",\n").join(setFactoryParameters.build()));
         } else if ((mapBinding = ProvisionBinding.isMapBindingCollection(bindings)) == true) {
           ImmutableList.Builder<String> mapFactoryParameters = ImmutableList.builder();
-          mapFactoryParameters.add(providerNames.get(key));
-          boolean isFirst = true;
+          mapFactoryParameters.add(providerNames.get(key)); 
+         
+          boolean isFirstBinding = true;
           for (ProvisionBinding binding : bindings) {
-            ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(binding.bindingElement());
+            ExecutableElement e = (ExecutableElement) binding.bindingElement();
+            ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
             Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
-            System.out.println("Here the value is " + map.entrySet().iterator().next().getValue());
+            if (isFirstBinding) {
+              Key s = binding.providedKey();
+              TypeVisitor<Object, Void> typeVisitor =  new SimpleTypeVisitor6<Object, Void>(){
+                @Override public List<? extends TypeMirror> visitDeclared(DeclaredType t,
+                    Void p) {
+                      return t.getTypeArguments();
+                }
+              };
+              String size = Integer.toString(bindings.size());
+              List<? extends TypeMirror> mapArgs = (List<? extends TypeMirror>) s.type().accept(typeVisitor, null);
+              TypeMirror keyType =  mapArgs.get(0);
+              List<? extends TypeMirror> mapValueArgs = (List<? extends TypeMirror>) mapArgs.get(1).accept(typeVisitor, null);
+              TypeMirror valueType = mapValueArgs.get(0);
+
+              mapFactoryParameters.add(keyType.toString());
+              mapFactoryParameters.add(valueType.toString()); 
+              mapFactoryParameters.add(size);
+
+              isFirstBinding = false;
+            }
             mapFactoryParameters.add(map.entrySet().iterator().next().getValue().toString());
             mapFactoryParameters.add(initializeFactoryForBinding(
                 writer, binding, moduleNames, providerNames,membersInjectorNames));
-            if (isFirst) {
-              mapFactoryParameters.add(map.entrySet().iterator().next().getValue().toString());
-              mapFactoryParameters.add(initializeFactoryForBinding(
-                  writer, binding, moduleNames, providerNames,membersInjectorNames));
-              isFirst = false;
-            }
           }
           
-          Object[] mapFactoryPara = mapFactoryParameters.build().toArray();
-         
-          StringBuilder mapPattern = new StringBuilder("this.%s = MapProviderFactory.create(MapProviderFactory.builder(%s, %s)");
-          for (int i = 0; i < mapFactoryParameters.build().size() - 3; i += 2) {
-            mapPattern.append("%n.put(%s, (Provider)%s)");
+          StringBuilder mapPattern = new StringBuilder("this.%s = MapProviderFactory.<%s, %s>builder(%s)");
+          for (int i = 0; i < mapFactoryParameters.build().size() - 4; i += 2) {
+            mapPattern.append("%n.put(%s, %s)");
           }
-          mapPattern.append(".build())");
-          System.out.println("Pattern:" + mapPattern);
+          mapPattern.append("%n.build()");
           writer.emitStatement(mapPattern.toString(),
-              mapFactoryPara);
+              mapFactoryParameters.build().toArray());  
         } else if (ProvisionBinding.isNotACollection(setBinding, mapBinding, bindings)) {
           ProvisionBinding binding = Iterables.getOnlyElement(bindings);
           writer.emitStatement("this.%s = %s",

@@ -22,15 +22,25 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>>{
     return new MapProviderFactory<K, V>();
   }
   
-  public static <K, V> ImmutableMap.Builder<K, Provider<V>> builder(K k, Provider<V> pv) {
-    //TODO (houcy)
-    return ImmutableMap.<K, Provider<V>>builder();
-    //OR return new ImmutableMap.Builder<K, Provider<V>>();
+  public static class Builder<K, V> {
+    private final int size;
+    
+    public Builder(int size) {
+      this.size = size;  
+    }
+    public MapProviderFactory<K, V> build() {
+      return null;
+    }
+    
+    public Builder<K, V> put(K k, Provider<V> pv) {
+      return null;
+    }
   }
-  
-  
-  
-  
+ 
+  public static <K, V> Builder<K, V> builder(int size) {
+    return null;
+    
+  }
   private MapProviderFactory() {
     
   }
