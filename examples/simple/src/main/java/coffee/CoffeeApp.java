@@ -4,16 +4,9 @@ import javax.inject.Inject;
 
 import dagger.ObjectGraph;
 
-public class CoffeeApp implements Runnable {
-  @Inject CoffeeMaker coffeeMaker;
-
-  @Override public void run() {
-    coffeeMaker.brew();
-  }
-
+public class CoffeeApp {
   public static void main(String[] args) {
-    ObjectGraph objectGraph = ObjectGraph.create(new DripCoffeeModule());
-    CoffeeApp coffeeApp = objectGraph.get(CoffeeApp.class);
-    coffeeApp.run();
+    CoffeeMain coffee = new Dagger_CoffeeMain(new DripCoffeeModule(), new PumpModule(), new MilkFlavorModule());
+    coffee.getMaker().brew();
   }
 }
