@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableMap;
 
 import dagger.Factory;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Provider;
 
@@ -29,7 +26,7 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>>{
       this.mapBuilder = new ImmutableMap.Builder<K, Provider<V>>();
     }
     public MapProviderFactory<K, V> build() {
-      return new MapProviderFactory(this.mapBuilder.build());
+      return new MapProviderFactory<K, V>(this.mapBuilder.build());
     }
     
     public Builder<K, V> put(K k, Provider<V> pv) {
