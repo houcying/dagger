@@ -1,4 +1,4 @@
-package dagger.internal.codegen;
+package dagger;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -10,4 +10,4 @@ import java.lang.annotation.Target;
 @Target(ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
-public @interface MapKey {}
+public @interface MapKey { }

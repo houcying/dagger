@@ -56,7 +56,7 @@ public class MapBindingComponentProcessorTest {
         "}");
     JavaFileObject enumKeyFile = JavaFileObjects.forSourceLines("test.EnumKey", 
         "package test;",
-        "import dagger.internal.codegen.MapKey;",
+        "import dagger.MapKey;",
         "import java.lang.annotation.Retention;",
         "import static java.lang.annotation.RetentionPolicy.RUNTIME;",
         "",
@@ -177,7 +177,7 @@ public class MapBindingComponentProcessorTest {
         "}");
     JavaFileObject stringKeyFile = JavaFileObjects.forSourceLines("test.StringKey", 
         "package test;",
-        "import dagger.internal.codegen.MapKey;",
+        "import dagger.MapKey;",
         "import java.lang.annotation.Retention;",
         "import static java.lang.annotation.RetentionPolicy.RUNTIME;",
         "",
