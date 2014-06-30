@@ -4,7 +4,7 @@ import static dagger.Provides.Type.MAP;
 
 import dagger.Module;
 import dagger.Provides;
-
+// 
 @Module
 class MilkFlavorModule {
   @Provides(type = MAP)
