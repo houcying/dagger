@@ -292,30 +292,25 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
               Joiner.on(",\n").join(setFactoryParameters.build()));
         } else if ((mapBinding = ProvisionBinding.isMapBindingCollection(bindings)) == true) {
           ImmutableList.Builder<String> mapFactoryParameters = ImmutableList.builder();
-          mapFactoryParameters.add(providerNames.get(key)); 
          
           boolean isFirstBinding = true;
           for (ProvisionBinding binding : bindings) {
             ExecutableElement e = (ExecutableElement) binding.bindingElement();
             ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
             Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
+            //get the key and value type of the map 
             if (isFirstBinding) {
-              Key s = binding.providedKey();
-              TypeVisitor<Object, Void> typeVisitor =  new SimpleTypeVisitor6<Object, Void>(){
-                @Override public List<? extends TypeMirror> visitDeclared(DeclaredType t,
-                    Void p) {
-                      return t.getTypeArguments();
-                }
-              };
-              String size = Integer.toString(bindings.size());
-              List<? extends TypeMirror> mapArgs = (List<? extends TypeMirror>) s.type().accept(typeVisitor, null);
+              DeclaredType declaredMapType = (DeclaredType) binding.providedKey().type();
+              List<? extends TypeMirror> mapArgs = declaredMapType.getTypeArguments();
               TypeMirror keyType =  mapArgs.get(0);
-              List<? extends TypeMirror> mapValueArgs = (List<? extends TypeMirror>) mapArgs.get(1).accept(typeVisitor, null);
+              DeclaredType declaredValueType = (DeclaredType) mapArgs.get(1);
+              List<? extends TypeMirror> mapValueArgs = declaredValueType.getTypeArguments();
               TypeMirror valueType = mapValueArgs.get(0);
 
+              mapFactoryParameters.add(providerNames.get(key)); 
               mapFactoryParameters.add(keyType.toString());
               mapFactoryParameters.add(valueType.toString()); 
-              mapFactoryParameters.add(size);
+              mapFactoryParameters.add(Integer.toString(bindings.size()));
 
               isFirstBinding = false;
             }

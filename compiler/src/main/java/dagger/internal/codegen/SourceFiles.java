@@ -31,14 +31,18 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.SetMultimap;
+
 import com.squareup.javawriter.JavaWriter;
+
 import dagger.Lazy;
 import dagger.MembersInjector;
 import dagger.internal.DoubleCheckLazy;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.inject.Provider;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -194,11 +198,13 @@ class SourceFiles {
     for (Entry<Key, Collection<ProvisionBinding>> entry : bindings.asMap().entrySet()) {
       Collection<ProvisionBinding> bindingsForKey = entry.getValue();
       final String name;
-      if (ProvisionBinding.isSetBindingCollection(bindingsForKey)) {
+      boolean setBinding;
+      boolean mapBinding;
+      if ((setBinding = ProvisionBinding.isSetBindingCollection(bindingsForKey)) == true) {
         name = new KeyVariableNamer().apply(entry.getKey()) + "Provider";
-      } else if (ProvisionBinding.isMapBindingCollection(bindingsForKey)) {
+      } else if ((mapBinding = ProvisionBinding.isMapBindingCollection(bindingsForKey)) == true) {
         name = new KeyVariableNamer().apply(entry.getKey()) + "Provider";
-      } else {
+      } else if (ProvisionBinding.isNotACollection(setBinding, mapBinding, bindingsForKey)) {
         ProvisionBinding binding = Iterables.getOnlyElement(bindingsForKey);
         name = binding.bindingElement().accept(
             new ElementKindVisitor6<String, Void>() {
@@ -218,6 +224,8 @@ class SourceFiles {
                     e.getSimpleName().toString());
               }
             }, null) + "Provider";
+      } else {
+        name = null;
       }
       providerNames.put(entry.getKey(), name);
     }

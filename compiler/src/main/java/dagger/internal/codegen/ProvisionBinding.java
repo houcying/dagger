@@ -130,14 +130,16 @@ abstract class ProvisionBinding extends Binding {
   /**
    * Returns {@code true} if the given bindings is not a collection.
    *
-   * @throws IllegalArgumentException if the bindings in the collection are not supported in Dagger.
+   * @throws IllegalArgumentException if the bindings in the collection are not supported in Dagger (Not setBinding or mapBinding).
    */
   static boolean isNotACollection(boolean setBinding, boolean mapBinding, Iterable<ProvisionBinding> bindings) {
+    checkNotNull(bindings);
     Iterator<ProvisionBinding> iterator = bindings.iterator();
+    checkArgument(iterator.hasNext(), "no bindings");
     ProvisionBinding temp = iterator.next();
     if (iterator.hasNext()) {
       checkArgument(mapBinding || setBinding,
-          "more than one binding present, but found a invalid binding");
+          "more than one binding present, but found an invalid binding");
     }
     return !(mapBinding || setBinding);
   }
