@@ -1,9 +1,25 @@
+/*
+ * Copyright (C) 2014 Google, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dagger.internal;
 
 import dagger.Factory;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +46,9 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>> {
     private final LinkedHashMap<K, Provider<V>> mapBuilder;
     
     public Builder(int size) {
-      this.mapBuilder = new LinkedHashMap<K, Provider<V>>(size);
+      //TODO(houcy): consider which way to initialize mapBuilder is better
+     // this.mapBuilder = new LinkedHashMap<K, Provider<V>>(size);
+      this.mapBuilder = newLinkedHashMapWithExpectedSize(size);
     }
     /**
      * Returns a new {@link MapProviderFactory} 
@@ -42,6 +60,13 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>> {
      * Associate k with providerOfValue in {@link Builder}
      */
     public Builder<K, V> put(K key, Provider<V> providerOfValue) {
+      if (key == null) {
+        throw new NullPointerException("The key is null");
+      }
+      if (providerOfValue == null) {
+        throw new NullPointerException("The provider of the value is null");
+      }
+
       this.mapBuilder.put(key, providerOfValue);
       return this;
     }
@@ -65,6 +90,20 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>> {
    */
   @Override
   public Map<K, Provider<V>> get() {
-    return Collections.unmodifiableMap(contributingMap);
+    if (this.contributingMap.isEmpty()) {
+      throw new IllegalStateException("An empty map was provided");
+    }
+    return Collections.unmodifiableMap(this.contributingMap);
   }
+  
+//TODO(gak): consider whether (expectedSize, 1.0f) is better for this use case since callers are
+ // typically only going to iterate
+ private static <K, V> LinkedHashMap<K,  Provider<V>> newLinkedHashMapWithExpectedSize(int expectedSize) {
+   int initialCapacity = (expectedSize < 3)
+       ? expectedSize + 1
+       : (expectedSize < (1 << (Integer.SIZE - 2)))
+           ? expectedSize + expectedSize / 3
+           : Integer.MAX_VALUE;
+   return new LinkedHashMap<K, Provider<V>>(initialCapacity);
+ }
 }

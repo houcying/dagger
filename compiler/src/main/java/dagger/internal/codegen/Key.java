@@ -121,7 +121,6 @@ abstract class Key {
     
     private TypeElement getMapElement() {
       return elements.getTypeElement(Map.class.getCanonicalName());
-      //return elements.getTypeElement(Map.class.getCanonicalName());
     }
     
     private TypeElement getProviderElement() {
@@ -145,7 +144,7 @@ abstract class Key {
         case MAP:
           ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
           Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
-          //Support String and Enum map key type
+          //Only support String and Enum map key type
           AnnotationValueVisitor<Object, Void> mapKeyVisitor = 
               new SimpleAnnotationValueVisitor6<Object, Void>() {
             @Override public TypeElement visitEnumConstant(VariableElement c, Void p) {
@@ -156,6 +155,9 @@ abstract class Key {
             }
           };
           TypeElement keyTypeElement = (TypeElement) map.entrySet().iterator().next().getValue().accept(mapKeyVisitor, null);
+          if (keyTypeElement == null) {
+            throw new NullPointerException("Not supported key type of MAP");
+          }
           TypeMirror valueType = types.getDeclaredType(getProviderElement(), returnType);
           TypeMirror mapType = types.getDeclaredType(getMapElement(), keyTypeElement.asType(), valueType);
           return new AutoValue_Key(rewrap(qualifier), MoreTypes.equivalence().wrap(mapType));

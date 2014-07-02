@@ -56,7 +56,6 @@ final class ComponentProcesssingStep implements ProcessingStep {
       ValidationReport<TypeElement> report =
           componentValidator.validate(componentTypeElement);
       report.printMessagesTo(messager);
-
       if (report.isClean()) {
         try {
           componentGenerator.generate(componentDescriptorFactory.create(componentTypeElement));

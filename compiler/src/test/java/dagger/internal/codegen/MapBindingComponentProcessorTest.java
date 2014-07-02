@@ -21,6 +21,7 @@ import static org.truth0.Truth.ASSERT;
 import com.google.common.collect.ImmutableList;
 import com.google.testing.compile.JavaFileObjects;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -29,6 +30,7 @@ import javax.tools.JavaFileObject;
 
 @RunWith(JUnit4.class)
 public class MapBindingComponentProcessorTest {
+
    @Test public void mapBindingsWithEnumKey() {
     JavaFileObject mapModuleOneFile = JavaFileObjects.forSourceLines("test.MapModuleOne",
         "package test;",
@@ -149,7 +151,7 @@ public class MapBindingComponentProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(generatedComponent);
   }
- 
+
   @Test public void mapBindingsWithStringKey() {
     JavaFileObject mapModuleOneFile = JavaFileObjects.forSourceLines("test.MapModuleOne",
         "package test;",
@@ -265,4 +267,119 @@ public class MapBindingComponentProcessorTest {
         .and().generatesSources(generatedComponent);
   }
   
+  @Ignore
+  @Test public void mapBindingsWithIntegerKey() {
+    JavaFileObject mapModuleOneFile = JavaFileObjects.forSourceLines("test.MapModuleOne",
+        "package test;",
+        "",
+        "import static dagger.Provides.Type.MAP;",
+        "",
+        "import dagger.Module;",
+        "import dagger.Provides;",
+        "",
+        "@Module",
+        "final class MapModuleOne {",
+        "  @Provides(type = MAP) @IntegerKey(1) Handler provideAdminHandler() { return new AdminHandler(); }",
+        "}");
+    JavaFileObject mapModuleTwoFile = JavaFileObjects.forSourceLines("test.MapModuleTwo",
+        "package test;",
+        "",
+        "import static dagger.Provides.Type.MAP;",
+        "",
+        "import dagger.Module;",
+        "import dagger.Provides;",
+        "",
+        "@Module",
+        "final class MapModuleTwo {",
+        "  @Provides(type = MAP) @IntegerKey(2) Handler provideLoginHandler() { return new LoginHandler(); }",
+        "}");
+    JavaFileObject integerKeyFile = JavaFileObjects.forSourceLines("test.IntegerKey", 
+        "package test;",
+        "import dagger.MapKey;",
+        "import java.lang.annotation.Retention;",
+        "import static java.lang.annotation.RetentionPolicy.RUNTIME;",
+        "",
+        "@MapKey",
+        "@Retention(RUNTIME)",
+        "public @interface IntegerKey {",
+        "  int value();",  // Or Enum value(); using annotationMirror to obtain the concrete value, compile reflection
+        "}");
+    JavaFileObject HandlerFile = JavaFileObjects.forSourceLines("test.Handler", 
+        "package test;",
+        "",
+        "interface Handler {",
+        "}");
+    JavaFileObject LoginHandlerFile = JavaFileObjects.forSourceLines("test.LoginHandler",
+        "package test;",
+        "",
+        "class LoginHandler implements Handler {",
+        "  public LoginHandler() {",
+        "  }",
+        "}");
+    JavaFileObject AdminHandlerFile = JavaFileObjects.forSourceLines("test.AdminHandler",
+        "package test;",
+        "",
+        "class AdminHandler implements Handler {",
+        "  public AdminHandler() {",
+        "  }",
+        "}");
+    JavaFileObject componentFile = JavaFileObjects.forSourceLines("test.TestComponent",
+        "package test;",
+        "",
+        "import dagger.Component;",
+        "import java.util.Map;",
+        "",
+        "import javax.inject.Provider;",
+        "",
+        "@Component(modules = {MapModuleOne.class, MapModuleTwo.class})",
+        "interface TestComponent {",
+        "  Map<Integer, Provider<Handler>> dispatcher();",
+        "}");
+    JavaFileObject generatedComponent = JavaFileObjects.forSourceLines("test.Dagger_TestComponent",
+        "package test;",
+        "",
+        "import dagger.internal.MapProviderFactory;",
+        "import java.util.Map;",
+        "import javax.annotation.Generated;",
+        "import javax.inject.Provider;",
+        "",
+        "@Generated(\"dagger.internal.codegen.ComponentProcessor\")",
+        "public final class Dagger_TestComponent",
+        "    implements TestComponent {",
+        "  private final MapModuleOne mapModuleOne;",
+        "  private final MapModuleTwo mapModuleTwo;",
+        "  /**",
+        "   * Key{type=java.util.Map<java.lang.String,javax.inject.Provider<test.Handler>>}",
+        "   */",
+        "  private final Provider<Map<String, Provider<Handler>>> mapOfStringAndProviderOfHandlerProvider;",
+        "",
+        "",
+        "  public Dagger_TestComponent(MapModuleOne mapModuleOne, MapModuleTwo mapModuleTwo) {",
+        "    if (mapModuleOne == null) {",
+        "      throw new NullPointerException(\"mapModuleOne\");",
+        "    }",
+        "    this.mapModuleOne = mapModuleOne;",
+        "    if (mapModuleTwo == null) {",
+        "      throw new NullPointerException(\"mapModuleTwo\");",
+        "    }",
+        "    this.mapModuleTwo = mapModuleTwo;",
+        "    this.mapOfStringAndProviderOfHandlerProvider = MapProviderFactory.<java.lang.String, test.Handler>builder(2)",
+        "        .put(\"Admin\", new MapModuleOne$$ProvideAdminHandlerFactory(mapModuleOne))",
+        "        .put(\"Login\", new MapModuleTwo$$ProvideLoginHandlerFactory(mapModuleTwo))",
+        "        .build();",
+        "  }",
+        "",
+        "  @Override",
+        "  public Map<String, Provider<Handler>> dispatcher() {",
+        "    return mapOfStringAndProviderOfHandlerProvider.get();",
+        "  }",
+        "}");
+    
+    
+    ASSERT.about(javaSources())
+        .that(ImmutableList.of(mapModuleOneFile, mapModuleTwoFile, integerKeyFile,HandlerFile, LoginHandlerFile, AdminHandlerFile, componentFile))
+        .processedWith(new ComponentProcessor())
+        .compilesWithoutError();
+    //    .and().generatesSources(generatedComponent);
+  }
 }
