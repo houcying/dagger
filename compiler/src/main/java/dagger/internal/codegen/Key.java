@@ -15,6 +15,14 @@
  */
 package dagger.internal.codegen;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static dagger.internal.codegen.InjectionAnnotations.getMapKey;
+import static dagger.internal.codegen.InjectionAnnotations.getQualifier;
+import static javax.lang.model.element.ElementKind.CONSTRUCTOR;
+import static javax.lang.model.element.ElementKind.METHOD;
+import static javax.lang.model.type.TypeKind.DECLARED;
+
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Equivalence;
 import com.google.common.base.Function;
@@ -23,9 +31,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 
 import dagger.Provides;
-import dagger.internal.codegen.Util.CodeGenerationIncompleteException;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,14 +50,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.SimpleAnnotationValueVisitor6;
 import javax.lang.model.util.Types;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static dagger.internal.codegen.InjectionAnnotations.getQualifier;
-import static dagger.internal.codegen.InjectionAnnotations.getMapKey;
-import static javax.lang.model.element.ElementKind.CONSTRUCTOR;
-import static javax.lang.model.element.ElementKind.METHOD;
-import static javax.lang.model.type.TypeKind.DECLARED;
 
 /**
  * Represents a unique combination of {@linkplain TypeMirror type} and
