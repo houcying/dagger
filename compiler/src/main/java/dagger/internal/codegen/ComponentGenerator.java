@@ -208,10 +208,10 @@ final class ComponentGenerator extends SourceFileGenerator<ComponentDescriptor> 
               List<? extends TypeMirror> mapValueArgs = declaredValueType.getTypeArguments();
               TypeMirror valueType = mapValueArgs.get(0);
 
-              mapFactoryParameters.add(Snippet.create(providerNames.get(key), null)); 
+             /* mapFactoryParameters.add(Snippet.create(providerNames.get(key), null)); 
               mapFactoryParameters.add(Snippet.create(keyType.toString(), null));
               mapFactoryParameters.add(Snippet.create(valueType.toString(), null)); 
-              mapFactoryParameters.add(Snippet.create(Integer.toString(bindings.size()), null));
+              mapFactoryParameters.add(Snippet.create(Integer.toString(bindings.size()), null));*/
 
               isFirstBinding = false;
             }
