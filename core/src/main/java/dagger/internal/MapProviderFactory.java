@@ -27,8 +27,7 @@ import javax.inject.Provider;
 
 /**
  * A {@link Factory} implementation used to implement {@link Map} bindings. This factory always
- * returns a new {@link Map<K, Provider<V>>} instance for each call to {@link #get} (as required by {@link Factory})
- * whose elements are populated by subsequent calls to their {@link Provider#get} methods.
+ * returns a new {@link Map<K, Provider<V>>} instance for each call to {@link #get} (as required by {@link Factory}).
  *
  * @author Chenying Hou
  * @since 2.0
@@ -44,11 +43,10 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>> {
    */
   public static class Builder<K, V> {
     private final LinkedHashMap<K, Provider<V>> mapBuilder;
-    
+
     public Builder(int size) {
-      //TODO(houcy): consider which way to initialize mapBuilder is better
-     // this.mapBuilder = new LinkedHashMap<K, Provider<V>>(size);
-      this.mapBuilder = newLinkedHashMapWithExpectedSize(size);
+     //TODO(houcy): consider which way to initialize mapBuilder is better
+      this.mapBuilder = new LinkedHashMap<K, Provider<V>>(size);
     }
     /**
      * Returns a new {@link MapProviderFactory} 
@@ -95,15 +93,4 @@ public class MapProviderFactory<K, V> implements Factory<Map<K, Provider<V>>> {
     }
     return Collections.unmodifiableMap(this.contributingMap);
   }
-  
-//TODO(gak): consider whether (expectedSize, 1.0f) is better for this use case since callers are
- // typically only going to iterate
- private static <K, V> LinkedHashMap<K,  Provider<V>> newLinkedHashMapWithExpectedSize(int expectedSize) {
-   int initialCapacity = (expectedSize < 3)
-       ? expectedSize + 1
-       : (expectedSize < (1 << (Integer.SIZE - 2)))
-           ? expectedSize + expectedSize / 3
-           : Integer.MAX_VALUE;
-   return new LinkedHashMap<K, Provider<V>>(initialCapacity);
- }
 }

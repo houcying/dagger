@@ -151,7 +151,7 @@ public class MapBindingComponentProcessorTest {
         .compilesWithoutError()
         .and().generatesSources(generatedComponent);
   }
-
+  @Ignore
   @Test public void mapBindingsWithStringKey() {
     JavaFileObject mapModuleOneFile = JavaFileObjects.forSourceLines("test.MapModuleOne",
         "package test;",

@@ -129,7 +129,7 @@ abstract class Key {
       checkNotNull(e);
       e.getTypeParameters();
       checkArgument(e.getKind().equals(METHOD));
-      Provides providesAnnotation = e.getAnnotation(Provides.class); 
+      Provides providesAnnotation = e.getAnnotation(Provides.class);
       checkArgument(providesAnnotation != null);
       TypeMirror returnType = normalize(e.getReturnType());
       Optional<AnnotationMirror> qualifier = getQualifier(e);
@@ -140,8 +140,9 @@ abstract class Key {
           TypeMirror setType = types.getDeclaredType(getSetElement(), returnType);
           return new AutoValue_Key(rewrap(qualifier), MoreTypes.equivalence().wrap(setType));
         case MAP:
-          ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
-          Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationmirrors.iterator().next().getElementValues();
+          ImmutableSet<? extends AnnotationMirror> annotationMirrors = getMapKey(e);
+          Map<? extends ExecutableElement, ? extends AnnotationValue> map = annotationMirrors
+              .iterator().next().getElementValues();
           //Only support String and Enum map key type
           AnnotationValueVisitor<Object, Void> mapKeyVisitor = 
               new SimpleAnnotationValueVisitor6<Object, Void>() {
@@ -152,9 +153,10 @@ abstract class Key {
               return elements.getTypeElement(String.class.getCanonicalName());
             }
           };
-          TypeElement keyTypeElement = (TypeElement) map.entrySet().iterator().next().getValue().accept(mapKeyVisitor, null);
+          TypeElement keyTypeElement = (TypeElement) map.entrySet()
+              .iterator().next().getValue().accept(mapKeyVisitor, null); 
           if (keyTypeElement == null) {
-            throw new NullPointerException("Not supported key type of MAP");
+            throw new NullPointerException("Non-supported key type of map");
           }
           TypeMirror valueType = types.getDeclaredType(getProviderElement(), returnType);
           TypeMirror mapType = types.getDeclaredType(getMapElement(), keyTypeElement.asType(), valueType);

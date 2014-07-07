@@ -97,9 +97,9 @@ abstract class ProvisionBinding extends Binding {
     if (setBinding) {
       while (iterator.hasNext()) {
         checkArgument(setBinding,
-            "more than one binding present, but found a non-set binding");
+            "more than one binding present");
         checkArgument(SET_BINDING_TYPES.contains(iterator.next().provisionType()),
-            "more than one binding present, but found a non-set binding");
+            "more than one binding present");
       }
     }
     return setBinding;
@@ -119,9 +119,9 @@ abstract class ProvisionBinding extends Binding {
     if (mapBinding) {
       while (iterator.hasNext()) {
         checkArgument(mapBinding,
-            "more than one binding present, but found a non-map binding");
+            "more than one binding present");
         checkArgument(MAP_BINDING_TYPES.contains(iterator.next().provisionType()),
-            "more than one binding present, but found a non-map binding");
+            "more than one binding present");
       }
     }
     return mapBinding;

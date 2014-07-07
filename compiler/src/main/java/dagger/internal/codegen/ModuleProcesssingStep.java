@@ -76,7 +76,6 @@ public final class ModuleProcesssingStep implements ProcessingStep {
       }
     }
     ImmutableSet<ExecutableElement> validProvidesMethods = validProvidesMethodsBuilder.build();
-
     // process each module
     for (Element moduleElement : roundEnv.getElementsAnnotatedWith(Module.class)) {
       ValidationReport<TypeElement> report =

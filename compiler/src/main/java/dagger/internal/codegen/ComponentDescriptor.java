@@ -156,6 +156,7 @@ abstract class ComponentDescriptor {
         List<ExecutableElement> moduleMethods =
             ElementFilter.methodsIn(elements.getAllMembers(module));
         for (ExecutableElement moduleMethod : moduleMethods) {
+          //TODO Do we need to validate the method???
           if (moduleMethod.getAnnotation(Provides.class) != null) {
             ProvisionBinding providesMethodBinding =
                 provisionBindingFactory.forProvidesMethod(moduleMethod);

@@ -105,6 +105,8 @@ final class ErrorMessages {
 
   static final String PROVIDES_METHOD_NOT_IN_MODULE =
       "@Provides methods can only be present within a @Module";
+  
+  static final String PROVIDES_METHOD_MAP_KEY = "@Provides methods of type map must declare a map key";
 
   private ErrorMessages() {}
 }

@@ -1,6 +1,7 @@
 package coffee;
 
 import static dagger.Provides.Type.MAP;
+import static dagger.Provides.Type.SET;
 
 import dagger.Module;
 import dagger.Provides;
@@ -12,9 +13,15 @@ class PumpModule {
   }
   
   @Provides(type = MAP)
-  @StringKey("Vanilla")
+//  @StringKey("Vanilla")
   FlavorProcessor provideVanillaProcessor() {
     return new VanillaFlavorProcessor();
+  }
+  
+  //@Provides(type = SET)
+  //@StringKey("Vanilla")
+  Integer provideTwo() {
+    return 2;
   }
 }
 
