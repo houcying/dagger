@@ -1,17 +1,15 @@
 /*
  * Copyright (C) 2014 Google, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package dagger.internal.codegen;
 
@@ -68,7 +66,7 @@ abstract class ComponentDescriptor {
 
   /**
    * The list of {@link DependencyRequest} instances whose sources are methods on the component
-   * definition type.  These are the user-requested dependencies.
+   * definition type. These are the user-requested dependencies.
    */
   abstract ImmutableList<DependencyRequest> interfaceRequests();
 
@@ -79,16 +77,15 @@ abstract class ComponentDescriptor {
   abstract ImmutableSet<TypeElement> moduleDependencies();
 
   /**
-   * Returns the mapping from {@link Key} to {@link ProvisionBinding} that
-   * (with {@link #resolvedMembersInjectionBindings}) represents the full adjacency matrix for the
-   * object graph.
+   * Returns the mapping from {@link Key} to {@link ProvisionBinding} that (with
+   * {@link #resolvedMembersInjectionBindings}) represents the full adjacency matrix for the object
+   * graph.
    */
   abstract ImmutableSetMultimap<Key, ProvisionBinding> resolvedProvisionBindings();
 
   /**
-   * Returns the mapping from {@link Key} to {@link MembersInjectionBinding} that
-   * (with {@link #resolvedProvisionBindings}) represents the full adjacency matrix for the object
-   * graph.
+   * Returns the mapping from {@link Key} to {@link MembersInjectionBinding} that (with
+   * {@link #resolvedProvisionBindings}) represents the full adjacency matrix for the object graph.
    */
   abstract ImmutableMap<Key, MembersInjectionBinding> resolvedMembersInjectionBindings();
 
@@ -97,7 +94,7 @@ abstract class ComponentDescriptor {
    * {@link MembersInjector} implementations to initialize properly.
    */
   abstract ImmutableList<FrameworkKey> initializationOrdering();
-  
+
 
   static final class Factory {
     private final Elements elements;
@@ -119,12 +116,10 @@ abstract class ComponentDescriptor {
     private ImmutableSet<TypeElement> getTransitiveModules(ImmutableSet<TypeElement> seedModules) {
       Queue<TypeElement> moduleQueue = Queues.newArrayDeque(seedModules);
       LinkedHashSet<TypeElement> moduleElements = Sets.newLinkedHashSet();
-      for (TypeElement moduleElement = moduleQueue.poll();
-          moduleElement != null;
+      for (TypeElement moduleElement = moduleQueue.poll(); moduleElement != null;
           moduleElement = moduleQueue.poll()) {
         moduleElements.add(moduleElement);
-        AnnotationMirror moduleMirror =
-            getAnnotationMirror(moduleElement, Module.class).get();
+        AnnotationMirror moduleMirror = getAnnotationMirror(moduleElement, Module.class).get();
         ImmutableSet<TypeElement> moduleDependencies = MoreTypes.asTypeElements(types,
             ConfigurationAnnotations.getModuleIncludes(elements, moduleMirror));
         for (TypeElement dependencyType : moduleDependencies) {
@@ -147,8 +142,8 @@ abstract class ComponentDescriptor {
           provisionBindingFactory.forComponent(componentDefinitionType);
 
       ImmutableSetMultimap.Builder<Key, ProvisionBinding> bindingIndexBuilder =
-          new ImmutableSetMultimap.Builder<Key, ProvisionBinding>()
-              .put(componentBinding.providedKey(), componentBinding);
+          new ImmutableSetMultimap.Builder<Key, ProvisionBinding>().put(
+              componentBinding.providedKey(), componentBinding);
 
 
       for (TypeElement module : transitiveModules) {
@@ -156,7 +151,7 @@ abstract class ComponentDescriptor {
         List<ExecutableElement> moduleMethods =
             ElementFilter.methodsIn(elements.getAllMembers(module));
         for (ExecutableElement moduleMethod : moduleMethods) {
-          //TODO Do we need to validate the method???
+          // TODO Do we need to validate the method???
           if (moduleMethod.getAnnotation(Provides.class) != null) {
             ProvisionBinding providesMethodBinding =
                 provisionBindingFactory.forProvidesMethod(moduleMethod);
@@ -171,8 +166,8 @@ abstract class ComponentDescriptor {
 
       Deque<DependencyRequest> requestsToResolve = Queues.newArrayDeque();
 
-      for (ExecutableElement componentMethod
-          : ElementFilter.methodsIn(elements.getAllMembers(componentDefinitionType))) {
+      for (ExecutableElement componentMethod :
+          ElementFilter.methodsIn(elements.getAllMembers(componentDefinitionType))) {
         if (componentMethod.getModifiers().contains(ABSTRACT)) {
           List<? extends VariableElement> parameters = componentMethod.getParameters();
           switch (parameters.size()) {
@@ -202,8 +197,7 @@ abstract class ComponentDescriptor {
       ImmutableSet.Builder<FrameworkKey> resolutionOrder = ImmutableSet.builder();
 
       for (DependencyRequest requestToResolve = requestsToResolve.pollLast();
-          requestToResolve != null;
-          requestToResolve = requestsToResolve.pollLast()) {
+          requestToResolve != null; requestToResolve = requestsToResolve.pollLast()) {
         Key key = requestToResolve.key();
         if (requestToResolve.kind().equals(MEMBERS_INJECTOR)) {
           if (!resolvedMembersInjectionBindings.containsKey(key)) {
@@ -226,16 +220,15 @@ abstract class ComponentDescriptor {
                 requestsToResolve.addAll(injectBinding.get().dependencies());
                 resolvedProvisionBindings.put(key, injectBinding.get());
                 if (injectBinding.get().requiresMemberInjection()) {
-                  DependencyRequest forMembersInjectedType =
-                      dependencyRequestFactory.forMembersInjectedType(
-                          injectBinding.get().providedKey().type());
+                  DependencyRequest forMembersInjectedType = dependencyRequestFactory
+                      .forMembersInjectedType(injectBinding.get().providedKey().type());
                   requestsToResolve.add(forMembersInjectedType);
                 }
               } else {
                 // TODO(gak): support this
                 throw new UnsupportedOperationException(
                     "@Injected classes that weren't run with the compoenent processor are "
-                        + "(briefly) unsupported: " + key);
+                    + "(briefly) unsupported: " + key);
               }
             } else {
               resolvedProvisionBindings.putAll(key, explicitBindingsForKey);
@@ -248,8 +241,7 @@ abstract class ComponentDescriptor {
         resolutionOrder.add(FrameworkKey.forDependencyRequest(requestToResolve));
       }
 
-      return new AutoValue_ComponentDescriptor(
-          componentDefinitionType,
+      return new AutoValue_ComponentDescriptor(componentDefinitionType,
           interfaceRequestsBuilder.build(),
           moduleTypes,
           ImmutableSetMultimap.copyOf(resolvedProvisionBindings),

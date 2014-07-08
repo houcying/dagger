@@ -1,26 +1,24 @@
 /*
  * Copyright (C) 2014 Google, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
 package dagger.internal.codegen;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-
 import com.google.common.collect.Lists;
 
+import dagger.Provides.Type;
 import dagger.Factory;
 import dagger.MembersInjector;
 import dagger.internal.codegen.writer.ClassName;
@@ -33,16 +31,24 @@ import dagger.internal.codegen.writer.ParameterizedTypeName;
 import dagger.internal.codegen.writer.Snippet;
 import dagger.internal.codegen.writer.TypeName;
 import dagger.internal.codegen.writer.TypeReferences;
+
+import static dagger.internal.codegen.InjectionAnnotations.getMapKey;
+
 import java.util.Collections;
-
 import java.util.List;
-
+import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 
 import static dagger.internal.codegen.ProvisionBinding.Kind.PROVISION;
 import static dagger.internal.codegen.SourceFiles.factoryNameForProvisionBinding;
@@ -83,19 +89,33 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
 
   @Override
   JavaWriter write(ClassName generatedTypeName, ProvisionBinding binding) {
-    TypeName providedTypeName = TypeReferences.forTypeMirror(binding.providedKey().type());
+    TypeMirror keyType;
+    if (binding.provisionType().equals(Type.MAP)) {
+      ExecutableElement e = (ExecutableElement) binding.bindingElement();
+      ImmutableSet<? extends AnnotationMirror> annotationmirrors = getMapKey(e);
+      Map<? extends ExecutableElement, ? extends AnnotationValue> map =
+          annotationmirrors.iterator().next().getElementValues();
+      DeclaredType declaredMapType = (DeclaredType) binding.providedKey().type();
+      List<? extends TypeMirror> mapArgs = declaredMapType.getTypeArguments();
+      DeclaredType declaredValueType = (DeclaredType) mapArgs.get(1);
+      List<? extends TypeMirror> mapValueArgs = declaredValueType.getTypeArguments();
+      TypeMirror mapValueType = mapValueArgs.get(0);
+      keyType = mapValueType;
+    } else {
+      keyType = binding.providedKey().type();
+    }
+    TypeName providedTypeName = TypeReferences.forTypeMirror(keyType);
     JavaWriter writer = JavaWriter.inPackage(generatedTypeName.packageName());
 
     ClassWriter factoryWriter = writer.addClass(generatedTypeName.simpleName());
     factoryWriter.annotate(Generated.class).setValue(ComponentProcessor.class.getName());
     factoryWriter.addModifiers(PUBLIC, FINAL);
-    factoryWriter.addImplementedType(ParameterizedTypeName.create(
-        ClassName.fromClass(Factory.class),
-        providedTypeName));
+    factoryWriter.addImplementedType(
+        ParameterizedTypeName.create(ClassName.fromClass(Factory.class), providedTypeName));
 
 
 
-    MethodWriter getMethodWriter = factoryWriter.addMethod(binding.providedKey().type(), "get");
+    MethodWriter getMethodWriter = factoryWriter.addMethod(keyType, "get");
     getMethodWriter.annotate(Override.class);
     getMethodWriter.addModifiers(PUBLIC);
 
@@ -104,18 +124,16 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
     if (binding.bindingKind().equals(PROVISION)) {
       factoryWriter.addField(binding.bindingTypeElement(), "module").addModifiers(PRIVATE, FINAL);
       constructorWriter.addParameter(binding.bindingTypeElement(), "module");
-      constructorWriter.body()
-          .addSnippet("assert module != null;")
+      constructorWriter.body().addSnippet("assert module != null;")
           .addSnippet("this.module = module;");
     }
 
     if (binding.requiresMemberInjection()) {
-      ParameterizedTypeName membersInjectorType = ParameterizedTypeName.create(
-          MembersInjector.class, providedTypeName);
+      ParameterizedTypeName membersInjectorType =
+          ParameterizedTypeName.create(MembersInjector.class, providedTypeName);
       factoryWriter.addField(membersInjectorType, "membersInjector").addModifiers(PRIVATE, FINAL);
       constructorWriter.addParameter(membersInjectorType, "membersInjector");
-      constructorWriter.body()
-          .addSnippet("assert membersInjector != null;")
+      constructorWriter.body().addSnippet("assert membersInjector != null;")
           .addSnippet("this.membersInjector = membersInjector;");
     }
 
@@ -140,8 +158,7 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
       }
       field.addModifiers(PRIVATE, FINAL);
       constructorWriter.addParameter(field.type(), field.name());
-      constructorWriter.body()
-          .addSnippet("assert %s != null;", field.name())
+      constructorWriter.body().addSnippet("assert %s != null;", field.name())
           .addSnippet("this.%1$s = %1$s;", field.name());
     }
 
@@ -153,7 +170,6 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
     Snippet parametersSnippet = makeParametersSnippet(parameters);
 
     if (binding.bindingKind().equals(PROVISION)) {
-      //check whether there are mapbinding
       switch (binding.provisionType()) {
         case UNIQUE:
         case SET_VALUES:
@@ -162,26 +178,23 @@ final class FactoryGenerator extends SourceFileGenerator<ProvisionBinding> {
           break;
         case SET:
           getMethodWriter.body().addSnippet("return %s.singleton(module.%s(%s));",
-              ClassName.fromClass(Collections.class),
-              binding.bindingElement().getSimpleName(), parametersSnippet);
+              ClassName.fromClass(Collections.class), binding.bindingElement().getSimpleName(),
+              parametersSnippet);
           break;
         case MAP:
-          //TODO add implementation for mapbinding
           getMethodWriter.body().addSnippet("return module.%s(%s);",
-              ClassName.fromClass(Collections.class),
               binding.bindingElement().getSimpleName(), parametersSnippet);
           break;
         default:
           throw new AssertionError();
       }
     } else if (binding.requiresMemberInjection()) {
-      getMethodWriter.body().addSnippet("%1$s instance = new %1$s(%2$s);",
-          providedTypeName, parametersSnippet);
+      getMethodWriter.body().addSnippet("%1$s instance = new %1$s(%2$s);", providedTypeName,
+          parametersSnippet);
       getMethodWriter.body().addSnippet("membersInjector.injectMembers(instance);");
       getMethodWriter.body().addSnippet("return instance;");
     } else {
-      getMethodWriter.body()
-          .addSnippet("return new %s(%s);", providedTypeName, parametersSnippet);
+      getMethodWriter.body().addSnippet("return new %s(%s);", providedTypeName, parametersSnippet);
     }
 
     // TODO(gak): write a sensible toString

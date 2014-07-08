@@ -54,6 +54,13 @@ public @interface Provides {
      * otherwise not possible using {@link #SET}.
      */
     SET_VALUES,
+    
+    /**
+     * The method's return type forms the generic type argument of a {@code MAP<K, Provider<V>>}, and the
+     * returned value is contributed to the map. The object graph will pass dependencies to the
+     * method as parameters. The {@code Map<K, Provider<T>>} produced from the accumulation of values will be
+     * immutable.
+     */
     MAP;
   }
 
